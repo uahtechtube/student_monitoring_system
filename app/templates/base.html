@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}KIU Student Monitoring{% endblock %}</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --card-bg: rgba(31, 41, 55, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --accent-indigo: #6366f1;
+      --accent-violet: #8b5cf6;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+    }
+
+    .navbar {
+      background: rgba(17, 24, 39, 0.7) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .glass-card:hover {
+      box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-gradient-primary {
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+      color: white;
+      border: none;
+      font-weight: 600;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-gradient-primary:hover {
+      opacity: 0.9;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .btn-gradient-primary:active {
+      transform: translateY(1px);
+    }
+
+    .form-control, .form-select {
+      background-color: rgba(17, 24, 39, 0.6);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+    }
+
+    .form-control:focus, .form-select:focus {
+      background-color: rgba(17, 24, 39, 0.8);
+      border-color: var(--accent-indigo);
+      box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+      color: var(--text-primary);
+    }
+
+    .text-muted {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Custom alert styling */
+    .alert {
+      background: rgba(31, 41, 55, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+    }
+    .alert-danger {
+      border-color: rgba(244, 63, 94, 0.4);
+      color: #fda4af;
+    }
+    .alert-warning {
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fde047;
+    }
+    .alert-success {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #a7f3d0;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark mb-4 py-3">
+    <div class="{% block nav_container_class %}container{% endblock %}">
+      <span class="navbar-brand d-flex align-items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity" style="color: var(--accent-indigo)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        KIU Student Monitoring & Segmentation
+      </span>
+      {% if current_user.is_authenticated %}
+        <div class="d-flex align-items-center gap-3">
+          <span class="text-muted small">User: <strong>{{ current_user.username }}</strong> (<span class="text-white fw-bold">{{ current_user.role }}</span>)</span>
+          <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+      {% endif %}
+    </div>
+  </nav>
+  <div class="{% block container_class %}container{% endblock %} pb-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "ingestion": {
+    "file_type": "Excel",
+    "records": 20000,
+    "latency_ms": 11202.274800016312
+  },
+  "scaling": {
+    "scaling": [
+      {
+        "size": 100,
+        "latency_ms": 11885.377500002505,
+        "memory_mb": 0.4123401641845703
+      },
+      {
+        "size": 500,
+        "latency_ms": 241.51210000854917,
+        "memory_mb": 4.1344451904296875
+      },
+      {
+        "size": 1000,
+        "latency_ms": 487.2239999822341,
+        "memory_mb": 15.859208106994629
+      },
+      {
+        "size": 5000,
+        "latency_ms": 339.8150999855716,
+        "memory_mb": 17.969104766845703
+      },
+      {
+        "size": 10000,
+        "latency_ms": 484.5795000146609,
+        "memory_mb": 20.60415744781494
+      },
+      {
+        "size": 15970,
+        "latency_ms": 682.4796999862883,
+        "memory_mb": 23.752885818481445
+      }
+    ]
+  },
+  "db_perf": {
+    "records_written": 2000,
+    "sequential_ms": 3494.2817000264768,
+    "bulk_ms": 2428.5541999852285,
+    "speedup_factor": 1.4388320837343183
+  },
+  "quality": {
+    "Returning": {
+      "silhouette": 0.2358657346521523,
+      "wcss": 2364.235218211036,
+      "train_silhouette": 0.24434822315698523,
+      "test_silhouette": 0.24337018516845293,
+      "silhouette_gap": 0.0009780379885322987,
+      "possible_overfit": false,
+      "outliers_flagged": 0,
+      "outliers_percentage": 0.0
+    },
+    "New": {
+      "silhouette": 0.39116247895565526,
+      "wcss": 260.36961874952357,
+      "train_silhouette": 0.38412659638286795,
+      "test_silhouette": 0.3643614440848941,
+      "silhouette_gap": 0.01976515229797382,
+      "possible_overfit": false,
+      "outliers_flagged": 0,
+      "outliers_percentage": 0.0
+    }
+  }
+}

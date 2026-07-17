@@ -1,0 +1,1535 @@
+=== PAGE 1 ===
+ 
+ 
+ 
+DESIGN AND IMPLEMENTATION OF A MACHINE LEARNING BASED STUDENT 
+SEGMENTATION AND ACADEMIC MONITORING SYSTEM (A CASE STUDY OF 
+KASHIM IBRAHIM UNIVERSITY, KIU) 
+ 
+ 
+ 
+BY 
+ 
+ 
+ 
+ABUBAKAR ALHAJI MODU 
+(22/03/03/027) 
+ 
+ 
+ 
+ 
+ 
+A PROJECT SUBMITTED TO THE DEPARTMENT OF MATHREMATICS AND 
+COMPUTER SCIENCE, FACULTY OF SCIENCE, KASHIM IBRAHIM UNIVERSITY 
+IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF                
+BACHELOR OF SCIENCE (B.Sc. Hons.) COMPUTER SCIENCE 
+ 
+ 
+ 
+AUGUST 2026 
+
+
+=== PAGE 2 ===
+ 
+ 
+CHAPTER ONE 
+INTRODUCTION 
+1.1 Background of the Study 
+Higher education institutions globally generate enormous volumes of student academic data in 
+every academic cycle. These data include results of continuous assessments, semester 
+examinations, attendance records, assignment scores  and cumulative grade point averages 
+(CGPAs). Despite the richness of information embedded in these records, much of it is stored and 
+referenced only for administrative purposes such as grading, transcript generation  and statutory 
+reporting to regulatory bodies (Romero & Ventura, 2010). The potential of this data to support 
+early identification of students struggling academically  or to reveal systemic patterns in student 
+performance, remains largely untapped in many developing country universities. 
+The scale of student enrolment in Nigerian universities underscores the urgency of this challenge. 
+According to the National Universities Commission (NUC), Nigeria had over 170 accredited 
+universities as of 2022, with a total student enrolment exceeding 1.9 million across undergraduate 
+programmes (NUC, 2022). Managing the academic progress of such a large student population 
+through manual review of records is inherently impractical and susceptible to error. Lecturers and 
+academic advisors may be responsible for hundreds of student s simultaneously, making it nearly 
+impossible to detect early warning signs of academic decline through unaided observation alone. 
+Academic monitoring which involves the systematic tracking  and analysis of student academic 
+progress over time, is a critical institutional responsibility. Effective academic monitoring enables 
+universities to identify students at risk of academic failure, implement targeted interventions  and 
+improve graduation rates. Traditional academic monitoring in Nigerian universities is l argely 
+reactive intervention occurs only after a student has failed a cours e or been placed on probation, 
+rather than being proactive  and predictive (Adeyemi & Adeyemi, 2014). This reactive posture 
+results in missed opportunities to support students before their situations become irreversible. 
+The emergence of data science  and machine learning has opened new frontiers in educational 
+research and institutional management. Machine learning refers to a branch of artificial 
+intelligence that enables systems to learn patterns from data and make inferences or classifications 
+without being explicitly programmed for each scenario (Mitchell, 1997; Bishop, 2006). In the 
+
+=== PAGE 3 ===
+ 
+ 
+domain of education, machine learning techniques have been applied to problems ranging from 
+dropout prediction and course recommendation to performance classification  and early warning 
+system design (Baker & Yacef, 2009; Kotsiantis et al., 2010). 
+One of the most widely studied machine learning techniques in educational data analysis is 
+clustering. Clust ering is an unsupervised learning technique that identifies natural groupings 
+within a dataset without relying on pre labelled categories (Han, Kamber & Pei, 2012). Among the 
+various clustering algorithms available, K means clustering is one of the most commonly used due 
+to its computational efficiency, conceptual simplicity and scalability to large datasets (Jain, 2010). 
+K means operates by iteratively assigning data points to a predefined number of clusters (K) based 
+on minimizing the d istance between each data point and  its nearest cluster centroid (MacQueen, 
+1967; Lloyd, 1982). 
+When applied to student academic data, K  means clustering can partition the student population 
+into meaningful performance groups , for example, high  performing students, moderatel y 
+performing students  and academically at  risk students. These clusters can provide actionable 
+intelligence for university administrators, enabling them to design differentiated academic support 
+programs, allocate resources more effectively and monitor trends in academic performance across 
+student cohorts (Dutt, Aghabozrgi & Maizatul, 2015). 
+Educational Data Mining (EDM) is the interdisciplinary field dedicated to developing  and 
+applying analytical methods for exploring data originating from educational environments (Baker 
+& Yacef, 2009). EDM encompasses a wide range of techniques including classification, 
+regression, clustering, association rule mining and sequential pattern analysis. The application of 
+EDM has demonstrated measurable improvements in academ ic outcomes in several international 
+universities that have integrated data driven monitoring systems into their administration (Romero 
+& Ventura, 2010; Pena,Ayala, 2014). 
+In the Nigerian higher education context, however, the integration of machine learni ng and data 
+mining techniques in academic monitoring systems remains limited. Most universities, including 
+Kashim Ibrahim University, KIU, currently rely on conventional manual processes for academic 
+record keeping and student performance review. While som e institutions have adopted student 
+information systems (SIS) for data storage, these systems typically serve as passive repositories 
+rather than active analytical platforms. The lack of intelligent analytics capabilities means that 
+
+=== PAGE 4 ===
+ 
+ 
+large volumes of valuable academic data go unanalyzed and critical intervention opportunities are 
+frequently missed. 
+This study therefore proposes the design and implementation of a machine learning based student 
+segmentation and academic monitoring system as a case study of Kashim Ibrahim University, KIU. 
+The system will apply K means clustering to student academic data including CGPA, attendance 
+rate and assessment scores to segment students into performance groups and provide a dashboard 
+based interface for administrators and academic staff to monitor student progress and identify those 
+who may require academic support. This initiative represents a practical step towards data  driven 
+academic governance within the Nigerian university environment. 
+1.2 Statement of the Problem 
+The monitoring of student academic performance is a fundamental obligation of higher education 
+institutions. Sustained academic monitoring enables institutions to measure student progress, 
+detect signs of academic difficulty early  and implement corrective int erventions before 
+performance deteriorates irreversibly. However, in many Nigerian universities, academic 
+monitoring systems remain largely manual, fragmented and reactive (Adeyemi & Adeyemi, 2014; 
+Nworie, 2012). 
+At Kashim Ibrahim University, KIU, as in ma ny comparable institutions, student academic data 
+including examination scores, continuous assessment records and attendance figures are collected 
+each semester. However, these data are typically analysed in isolation for the purpose of 
+calculating semester grades and cumulative grade point averages, rather than being subjected to 
+deeper analytical scrutiny. The relationships between multiple performance indicators  and their 
+collective influence on academic st  anding are seldom explored in a systematic or a utomated 
+manner. 
+The volume of student data generated per semester makes manual analysis increasingly 
+impractical. A department with several hundred students across multiple levels would require 
+significant administrative effort to individually review each student's academic profile and identify 
+those who may be struggling. This labour, intensive approach is not scalable, is prone to oversight 
+and does not lend itself to the identification of patterns or trends across student cohorts (Han, 
+Kamber & Pei, 2012; Witten, Frank & Hall, 2016). 
+
+=== PAGE 5 ===
+ 
+ 
+Furthermore, the absence of an automated analytical framework means that academic 
+administrators lack the tools to cluster or categorise students according to performance 
+characteristics. Without such segmentation, it is difficult to design targeted academic interventions 
+or to allocate tutorial  and mentorship resources efficiently. Students who fall into high  risk 
+performance categories may go unidentified until they have already failed a course or accumulated 
+a CGPA below the minimum required st andard at which point the scope for effective intervention 
+is considerably diminished. 
+Existing literature has demonstrated that machine learning  based systems, particularly those 
+employing clustering techniques such as K  means, can effectively segment student populations  
+and provide early warning signals for academic underperformance (Dutt, Aghabozrgi & Maizatul, 
+2015; Kovacic, 2010; Bydžovská, 2016). However, few such systems have been designed  and 
+implemented within Nigerian university setting s and none are documented specifically for Kashim 
+Ibrahim University. 
+Therefore there is  an identifiable gap between the potential of machine learning analytics to 
+support academic monitoring and its current application in many Nigerian universities. This study 
+seeks to address that gap by developing a practical, functional  and deployable student 
+segmentation and academic monitoring system tailored to the operational realities of a Nigerian 
+university environment. 
+1.3 Objectives of the Study 
+The main objective of this study is to design  and implement a machine learning  based student 
+segmentation and academic monitoring system using K  means clustering, with Kashim Ibrahim 
+University, KIU, as the case study institution. 
+The specific objectives of the study are: 
+i. To design  and develop a web  based system that enables authorized administrators to 
+upload, manage and process student academic datasets. 
+ii. To implement the K  means clustering algorithm to automatically segment students into 
+performance groups based on academic indicators including CGPA, attendance rate  and 
+assessment scores. 
+ 
+
+=== PAGE 6 ===
+ 
+ 
+iii. To provide an academic monitoring interface that enables institutional administrators  and 
+academic staff to identify students who may require academic support, interventio n or 
+mentorship. 
+1.4 Scope of the Study 
+This study is concerned with the design  and implementation of a machine learning based student 
+segmentation and academic monitoring system. The analytical scope of the study encompasses 
+three principal academic perfo rmance indicators: cumulative grade point average (CGPA), 
+attendance rate (expressed as a percentage)  and assessment scores (comprising coursework  and 
+test marks). These indicators were selected on the basis of their availability within institutional 
+records, their recognised influence on overall academic outcomes  and their frequent use in 
+comparable educational data mining studies (Romero & Ventura, 2010; Dutt, Aghabozrgi & 
+Maizatul, 2015). 
+The system developed in this study employs the K  means clustering algorithm for student 
+segmentation. The study does not extend to predictive modelling of future academic performance, 
+nor does it incorporate natural language processing, deep learning or other advanced machine 
+learning paradigms. The clustering analysis is limited to unsupervised grouping of students based 
+on the three stated performance variables  and the results are communicated through an 
+administrative dashboard. 
+Geographically, the study is conducted as a case study of Kashim Ibrahim University, KIU, Borno 
+State, Nigeria. The dataset used in the study is sourced from or constructed to reflect the structure 
+of student academic records at that institution. The system is designed primarily for use by 
+academic administrators  and departmental level staff. It is not intended as a student  facing 
+application. 
+The study does not address network security architecture, integration with existing university 
+enterprise resource planning (ERP) systems  or long term data governance frameworks, as these 
+fall outside the defined scope of a final year undergraduate project. These areas are acknowledged 
+as important considerations for future development and deployment. 
+1.5 Significance of the Study 
+This study holds significance at multiple levels institutional, academic and practical. 
+
+=== PAGE 7 ===
+ 
+ 
+From an institutional st  andpoint, the system developed in this study offers a practical tool for 
+academic administrators at Kashim Ibrahim University and comparable institutions to improve the 
+quality and efficiency of student academic monitoring. By automating the segmentation of students 
+based on performance data, the system reduces the administrative burden associated with manual 
+record review and enables faster, more consistent identification of students who require academic 
+support. This can contribute directly to improved student retention and academic outcomes. 
+From an academic st  andpoint, this study contributes to the growing body of literature on 
+educational data mining  and machine learning applications in Nigerian higher education. While  
+international literature on clustering  based academic monitoring systems is well developed 
+(Romero & Ventura, 2010; Baker & Yacef, 2009; Pena ,Ayala, 2014), indigenous studies 
+contextualized to Nigerian universities remain relatively limited. This work the refore fills an 
+identifiable gap in the local academic literature  and may serve as a reference for subsequent 
+researchers in this domain. 
+From a practical st andpoint, the dashboard and reporting features of the system provide decision 
+support capabilities that enable data driven academic governance. Rather than relying on intuition 
+or anecdotal assessments, academic staff can use evidence derived from quantitative cluster 
+analysis to inform decisions regarding tutorial allocations, probation notifications and scholarship 
+assessments. 
+More broadly, this study demonstrates that the application of machine learning techniques in 
+academic management is both feasible  and beneficial within the resource constraints typical of 
+Nigerian universities. It provides a replicable model that other institutions in the country can adapt 
+to their local data structures and operational contexts. In doing so, it supports the broader ambition 
+of the National Universities Commission to improve the quality  and data responsiveness of  
+academic management across the Nigerian higher education system (NUC, 2022). 
+1.6 Operational Definition of Terms 
+Academic Monitoring 
+The systematic process of collecting, reviewing and analysing student academic performance data 
+over time in order to trac k progress, detect signs of academic difficulty  and facilitate timely 
+institutional intervention (Adeyemi & Adeyemi, 2014). 
+
+=== PAGE 8 ===
+ 
+ 
+Artificial Intelligence (AI) 
+A broad field of computer science concerned with the development of systems capable of 
+performing tasks  that would normally require human cognitive abilities, including reasoning, 
+pattern recognition, learning and decision making (Russell & Norvig, 2016). 
+Cluster 
+A group of data points that share greater similarity with one another than with data points in other 
+groups, as determined by a chosen distance or similarity metric within a clustering algorithm (Jain, 
+2010). 
+Clustering 
+An unsupervised machine learning technique that groups unlabeled data points into clusters based 
+on inherent similarities in their feature values, without prior knowledge of class labels (Han, 
+Kamber & Pei, 2012). 
+Cumulative Grade Point Average (CGPA) 
+A numerical measure of a student's cumulative academic achievement across all completed 
+semesters, calculated as the weighted average o f the grade points earned in all registered courses 
+up to the point of calculation. 
+Dashboard 
+A graphical user interface that organises  and presents key performance indicators  and analytical 
+results in a visual format, enabling users to monitor information  at a glance and make informed 
+decisions (Few, 2006). 
+Educational Data Mining (EDM) 
+An interdisciplinary field focused on the development  and application of computational methods 
+for exploring and analysing data generated within educational environments, with the aim of better 
+underst anding students and the institutions in which they learn (Baker & Yacef, 2009). 
+K means Clustering 
+A partition clustering algorithm that divides a dataset into K pre  specified clusters by iteratively 
+assigning each data point to the nearest cluster centroid and updating centroids until convergence 
+(MacQueen, 1967; Lloyd, 1982). 
+Machine Learning 
+
+=== PAGE 9 ===
+ 
+ 
+A subfield of artificial intelligence that enables computer systems to automatically learn  and 
+improve from experience ,specifically, b y detecting patterns in data ,without being explicitly 
+programmed for each task (Mitchell, 1997). 
+Student Segmentation 
+The process of partitioning a student population into distinct subgroups based on similarities in 
+academic performance characteristics, f or the purpose of facilitating differentiated academic 
+support or decision making (Dutt, Aghabozrgi & Maizatul, 2015). 
+Unsupervised Learning 
+A category of machine learning in which algorithms identify structure and patterns within data that 
+has not been pre labelled or categorised relying instead on inherent statistical relationships among 
+the input features (Bishop, 2006). 
+  
+
+=== PAGE 10 ===
+ 
+ 
+CHAPTER TWO 
+LITERATURE REVIEW 
+2.1 Introduction 
+This chapter presents a structured review of literature relevant to the design  and implementation 
+of a machine learning based student segmentation and academic monitoring system. The review is 
+organised to establish a strong conceptual and empirical foundation for the study, beginning with 
+the theoretical basis of machine learning  and educational data mining before narrowing 
+progressively to clustering methodologies, student performance analysis  and related system 
+implementations. The chapter concludes by synthesizing findings from related studies, identifying 
+critical gaps in the existing literature and establishing how the present study addresses those gaps 
+through a context aware, machine learning driven monitoring framework. 
+Literature reviewed in this chapter is drawn from peer  reviewed journal articles, conference 
+proceedings, authoritative text  books and technical reports published between 1967  and 2026. 
+Selected works include both foundational studies defining the theoretical basis of the techniques 
+employed and contemporary studies reflecting current advances in educational data minin g and 
+intelligent academic analytics. 
+2.2 Machine Learning: Concepts and Theoretical Foundations 
+Machine learning is a branch of artificial intelligence concerned with the development of 
+computational systems that improve their performance on a defined tas k through experience, 
+without being explicitly programmed for each scenario. The widely cited definition by Mitchell 
+(1997, p. 2) captures this principle precisely: a computer program learns from experience E with 
+respect to a class of tasks T and performance measure P if its performance at T improves with E. 
+This formulation distinguishes machine learning from conventional rule  based software, which 
+operates strictly on hardcoded logic regardless of data patterns. 
+Machine learning is categorised into three principal paradigms. Supervised learning trains a model 
+on labelled datasets,where inputs are paired with known outputs ,enabling predictive mappings for 
+unseen data. Representative algorithms include decision trees, support vector machines and neural 
+networks. Unsupervised learning, by contrast, operates on unlabelled data  and seeks to uncover 
+hidden structures through techniques such as clustering  and dimensionality reduction. 
+Reinforcement learning involves an agent that learns optimal behaviour throug h environmental 
+interaction and reward,based feedback (Bishop, 2006; Russell & Norvig, 2016). The rapid 
+
+=== PAGE 11 ===
+ 
+ 
+acceleration of machine learning since the early 2000s has been driven by exponential growth in 
+data availability, reductions in computational cost  and innovations in algorithm design (LeCun, 
+Bengio & Hinton, 2015). 
+Within education, machine learning has been applied to student dropout prediction, intelligent 
+tutoring, adaptive course recommendation, automated grading  and academic performance 
+classification (Kotsiantis, Pierrakeas & Pintelas, 2010; Kemper, Vorhies & Martens, 2020). The 
+growing digitalisation of academic administration through student information systems  and 
+learning management platforms has further exp anded the availability of structured data that these 
+techniques require. 
+2.2.1 Supervised vs. Unsupervised Learning in Educational Contexts 
+In educational data analysis, the distinction between supervised  and unsupervised learning has 
+significant methodological implications. Supervised techniques require datasets pre labelled with 
+outcome categories such as 'pass/fail' or 'at  risk/not at risk' ,which presupposes the availability of 
+reliable historical classifications. Many institutions, particularly in developing  country contexts, 
+lack such consistently labelled records (Bydžovská, 2016). Unsupervised learning eliminates this 
+dependency by discovering natural groupings within data based solely on statistical similarity. 
+This characteristic makes clustering especially valuable for exploratory ac ademic analytics and 
+institutions at early stages of data maturity (Dutt, Aghabozrgi & Maizatul, 2015). The present 
+study adopts the unsupervised learning approach precisely because it aligns with the nature of 
+available institutional data  and supports pat tern discovery without pre  imposed classification 
+assumptions. 
+2.3 Educational Data Mining 
+Educational Data Mining (EDM) is an interdisciplinary field that applies data mining, machine 
+learning and statistical techniques to data generated within educationa l environments, with the 
+objective of better underst  anding students and improving learning outcomes (Baker & Yacef, 
+2009). The field integrates methodologies from computer science, education  and psychology to 
+analyses data sourced from student information  systems, learning management platforms  and 
+institutional databases. 
+Romero and Ventura (2010), in a l  andmark review of over 300 studies, categorised EDM 
+applications into four domains: student modelling, domain knowledge modelling, pedagogical 
+support and institutional improvement.  The fourth domain institutional improvement through data 
+
+=== PAGE 12 ===
+ 
+ 
+driven administrative decision making is most directly relevant to the present study. Pena  Ayala 
+(2014) further surveyed 240 EDM studies and found classification to be the most commonly used 
+technique, followed by clustering and regression. Crucially, the survey also documented growing 
+interest in clustering based approaches for contexts where labelled data is unavailable, reinforcing 
+the analytical direction of this research. 
+2.3.1 Data Sources and Feature Selection 
+EDM systems draw on diverse data types: demographic features (age, gender, geographic 
+origin), academic features (grades, CGPA, attendance, assessment scores), engagement features 
+(LMS login frequency, assignment submission timing) and socioeconomic attributes. Academic 
+features consistently emerge as the most influential predictors of student outcomes across the 
+literature (Huang & Fang, 2013; Marburger, 2001). Attendance is of particular significance: 
+empirical studies have established a strong positive correlation between consistent class 
+attendance and academic achievement and conversely, a pattern of regular absence frequently 
+precedes academic decline even among students with comparable prior records (Gatherer & 
+Manning, 1998; Marburger, 2001). In this study, three core features, CGPA, attendance rate and 
+assessment score, are selected on the basis of theoretical validity, empirical precedent and 
+practical availability within the Nigerian institutional context. Because CGPA is only meaningful 
+for students with at least one completed semester, this study applies CGPA alongside attendance 
+rate and assessment score for returning students, while relying on attendance rate and assessment 
+score alone for newly admitted students, who have not yet accumulated a cumulative grade point 
+average. 
+ 
+2.4 Overview of Clustering Techniques 
+Clustering is a fundamental unsupervised machine learning technique that organizes data into 
+groups called clusters such that objects within the same cluster are more similar to each other than 
+to objects in other clus ters (Han, Kamber & Pei, 2012). Jain (2010) categorizes clustering 
+algorithms into four primary families: partitional, hierarchical, density , based and model based 
+methods. Table 2.1 provides a structured comparison of these families ac ross key analytical 
+dimensions. 
+ 
+ 
+ 
+ 
+
+=== PAGE 13 ===
+ 
+ 
+Family Key Algorithm(s) Requires K in 
+Advance? 
+H andles Outliers 
+Well? 
+Suitability for Student 
+Data 
+Partitional K means, 
+K,Medoids Yes Moderate 
+(K,Medoids better) 
+High ,efficient, scalable, 
+interpretable 
+Hierarchical Ward's, Complete 
+Linkage No Poor 
+Low ,O(n² log n) 
+complexity limits 
+scalability 
+Density Based DBSCAN, 
+HDBSCAN No High 
+Moderate ,sensitive to 
+parameter tuning with 
+variable, density data 
+Model Based Gaussian Mixture 
+Model (GMM) Yes Moderate 
+Low ,computationally 
+intensive; distributional 
+assumptions rarely hold 
+ 
+Table 2.1: Comparison of Major Clustering Algorithm Families 
+ 
+As Table 2.1 demonstrates, partitional clustering  and K means in particular, offers the optimal 
+balance of computational efficiency, interpretability  and scalability for student segmentation. 
+Hierarchical methods are computationally prohibitive for large cohorts. DBSCAN's sensitivity to 
+parameter configuration produces inconsistent results on variable  density academic data. Model  
+based methods introduce unnec essary complexity and distributional assumptions that academic 
+performance data rarely satisfies (Bishop, 2006; Han, Kamber & Pei, 2012). These comparative 
+weaknesses justify the selection of K means as the algorithm of choice for the present system. 
+2.5 The K means Clustering Algorithm 
+K means is one of the most widely studied and deployed algorithms in data mining, with over five 
+decades of application across diverse domains since its original formulation by MacQueen (1967) 
+and algorithmic refinement by Lloyd (1982). The algorithm partitions a dataset into K clusters by 
+minimizing the Within Cluster Sum of Squares (WCSS) ,a measure of intra cluster compactness 
+defined as: 
+J = Σ(k=1 to K) Σ(xᵢ ∈ Cₖ) ||xᵢ − μₖ||² 
+where μₖ is the centroid (mean vector) of clu ster Cₖ and ||xᵢ − μ ₖ||² is the squared Euclidean 
+distance. The algorithm operates through four iterative steps: (1) Initialize K centroids; (2) Assign 
+each data point to its nearest centroid; (3) Re  compute centroids as the mean of assigned points; 
+(4) Repeat until cluster assignments converge. Figure 2.1 illustrates this process conceptually. 
+ 
+  STEP 1           STEP 2              STEP 3          CONVERGENCE 
+  Initialize   →  Assign to nearest →  Update      →  No further 
+
+=== PAGE 14 ===
+ 
+ 
+  K centroids      centroid               centroids       assignment 
+                                                          changes 
+ 
+  Data Points      Cluster Assignment    Updated          Final 
+  o o o o          [High]  o o           Centroids        Clusters 
+  o o o o   →   [Avg]   o o    →    µ₁ µ₂ µ₃   →    C₁ C₂ C₃ 
+  o o o o          [Risk]  o o 
+ 
+Figure 2.1: K means Iterative Clustering Process 
+ 
+2.5.1 K means++ Initialization 
+Standard r andom centroid initialization is prone to suboptimal placement, leading to slow 
+convergence o r poor final clusters. Arthur  and Vassil vitskii (2007) addressed this with K 
+means++, which selects centroids probabilistically in proportion to their squared distance from 
+already selected centroids. This ensures wider initial spacing across the feature space, consistently 
+improving both cluster quality and convergence speed. K means++ is now the default initialization 
+strategy in scikit, learn and most modern ML libraries (Pedregosa et al., 2011). 
+2.5.2 Determining the Optimal Number of Clusters 
+Three established techniques are applied in this study to determine the appropriate value of K. The 
+Elbow Method plots WCSS against increasing K values; the optimal K appears at the 'elbow' 
+,where the marginal reduction in WCSS begins to diminish significantly (Ketchen & Shook, 1996). 
+The Silhouette Method measures, for each data point, how similar it is to its own cluster relative 
+to the nearest alternative; an average silhouette score approaching 1 indicates well  separated 
+clusters (Rousseeuw, 1987). The Gap Statistic compares observed WCSS to an expected baseline 
+under a reference null distribution, with the optimal K maximising the gap (Tibshirani, Walther & 
+Hastie, 2001). Across the EDM literature, K=3 , grouping students into high, average  and at risk 
+categories, is the most commonly adopted and institutionally actionable solution (Pal & Pal, 2013; 
+Bakar, Rosbi & Hamid, 2015). 
+2.5.3 Strengths and Limitations 
+K means offers computational efficiency with time complexity of O(nKd) per iteration ,highly 
+scalable for large student populations ,alongside interpretable centroid  based cluster summaries 
+that can be communicated directly to nontechnical academic stakeholders (Jain, 2010). Its 
+limitations are equally well documented: sensitivity to outliers, an assumption of spherical equally 
+sized clusters and the requirement to pre  specify K. In the present study, these limitations are 
+
+=== PAGE 15 ===
+ 
+ 
+mitigated through feature normalization,  IQR based outlier detection during preprocessing  and 
+systematic Elbow and Silhouette analysis for K selection. 
+2.6 Student Academic Performance Monitoring in Higher Education 
+Academic performance monitoring has evolved from simple record  keeping into a data driven 
+institutional function that integrates analytics, predictive modelling  and decision support. York, 
+Gibson and Rankin (2015) identify four essential components of effective monitoring systems: 
+timely data collection, systematic analysis, targeted intervention  and institutional feedback, 
+emphasizing that monitoring's value lies not in data accum ulation alone but in transforming data 
+into actionable insights. A critical development in this space is the early alert system, designed to 
+identify students at risk before academic failure occurs. Stinebrickner  and Stinebrickner (2014) 
+demonstrated that early identification combined with targeted support significantly improves 
+student retention, reducing dropout rates by up to 18% among at risk cohorts. 
+Despite these advances, adoption of data driven  monitoring remains uneven globally. In the 
+Nigerian con text, Adeyemi  and Adeyemi (2014) documented that most universities lack the 
+coordinated digital infrastructure necessary for systematic performance monitoring, with 
+fragmented data practices, limited technical capacity  and absent analytical frameworks 
+compounding the challenge. While Olaleye (2016) and Eze et al. (2018) note gradual progress in 
+the adoption of digital academic systems, the integration of machine learning techniques into 
+institutional monitoring remains largely absent. This positions the pre sent study at a critical 
+intersection between demonstrated international best practice and an underserved national context. 
+2.7 Review of Related Works 
+This section critically examines prior studies that have applied machine learning and data mining 
+techniques to student performance analysis. Rather than merely summarizing existing approaches, 
+the review evaluates each study's methodological contributions  and limitations relative to the 
+objectives of the present research. 
+Furthermore, Kovacic (2010) applied decision trees and logistic regression to enrolment data from 
+the Open Polytechnic of New Zeal and, demonstrating that institutional administrative data could 
+support meaningful student risk prediction. The study achieved classification accuracies between  
+62% and 68% and established the viability of using routinely collected administrative data, rather 
+than bespoke assessments, as the basis for academic risk identification. However, its reliance on 
+supervised learning required pre labelled outcome data and the absence of a deployable monitoring 
+interface limited its institutional utility beyond the analytical phase. 
+
+=== PAGE 16 ===
+ 
+ 
+Additionally, Pal and Pal (2013) applied K means clustering (K=3) to student examination scores, 
+internal assessment marks and attendance at an Indian technical university. The resulting clusters 
+mapped onto coherent academic performance categories, high, medium and low with the high  
+performance cluster exhibiting significantly higher attendance rates alongside stronger 
+examination results. This study is the closest direct precedent to the present work, validating both 
+the feature selection  and the algorithm. Its principal limitation is the absence of a system 
+implementation: the study remains an offline analysis without the monitoring dashboard o r 
+downloadable reporting capabilities that translate cluster insights into institutional action. 
+Besides, Dutt et al. (2015) reviewed 33 clustering based EDM studies and found that K means 
+accounted for 45% of applications attributed to its efficiency and interpretability while academic 
+performance indicators appeared as the primary feature set in 78% of studies. The survey 
+highlighted two important deficiencies: insufficient attention to usability for nontechnical 
+stakeholders and a near complete absence of studies in sub  Saharan African contexts. Both gaps 
+are directly addressed by the present study. 
+Equally Important, Bakar et al. (2015) applied K means to student CGPA and semester GPA data 
+at a Malaysian public university, determining K=4 as optimal thro ugh silhouette analysis  and 
+introducing the concept of longitudinal cluster tracking. Their findings showed that approximately 
+22% of at risk students migrated to higher  performing clusters within three semesters, a finding 
+that positions cluster , based monitoring as a tool for measuring intervention effectiveness over 
+time, not merely for point in time classification. The study did not, however, implement a real time 
+monitoring interface. 
+Similarly, Bydžovská (2016) compared K means, decision trees, naive Bayes and artificial neural 
+networks on student data from Masaryk University. While neural networks achieved the highest 
+predictive accuracy, clustering produced more interpretable  and actionable insights for academic 
+administrators. This study crystallizes a key design principle for the present work: in institutional 
+contexts where nontechnical stakeholders must act on analytical outputs, interpretability is not a 
+compromise, it  is a requirement. The  study does not, however, advance beyond comparative 
+analysis to system implementation. 
+Likewise, Within the Nigerian context, Afolabi et al. (2019) demonstrated the effectiveness of 
+classification trees using CGPA  and attendance as predictors, validating the feature selection of 
+the present study but without exploring clustering or implementing a monitoring interface. 
+
+=== PAGE 17 ===
+ 
+ 
+Olawale, Alabi and Ayo (2021) developed a threshold  based early warning system at a Nigerian 
+polytechnic ,demonstrating clear institutional demand for automated monitoring ,but their rule  
+based architecture lacks the adaptive, data driven  pattern discovery that machine learning 
+clustering provides. Together, these studies confirm both the relevance of performance monitoring 
+in Nigeria and the absence of ML based clustering solutions designed specifically for that context. 
+2.8 Comparative Analysis of Related Works 
+Table 2.2 presents a structured comparison of the reviewed studies across five analytical 
+dimensions. The final row positions the present study relative to the identified body of work. 
+ 
+ 
+Author(s) & 
+Year Technique Key Features Dashboard? Context Gap Relative to Present 
+Study 
+Kovacic (2010) Decision Tree, 
+LR 
+Demographics, 
+prior 
+qualifications 
+No New Zeal 
+and 
+Supervised only; no 
+clustering or dashboard 
+Pal & Pal (2013) K means (K=3) Exam scores, 
+CA, attendance No India No deployment framework 
+or monitoring interface 
+Dutt et al. (2015) 
+Survey (K 
+means 
+dominant) 
+Varied N/A International No African studies; no 
+implementation 
+Bakar et al. 
+(2015) K means (K=4) CGPA, Semester 
+GPA Partial Malaysia No real time monitoring or 
+actionable report output 
+Bydžovská 
+(2016) 
+K means, ANN, 
+DT, NB 
+Grades, course 
+history No Czech 
+Republic 
+Comparative study only; 
+no system deployment 
+Afolabi et al. 
+(2019) 
+Classification 
+Tree, LR 
+Attendance, 
+CGPA No Nigeria No clustering; no 
+dashboard; supervised only 
+Olawale et al. 
+(2021) 
+Rule Based 
+Thresholds 
+CGPA, 
+Attendance Partial Nigeria No ML; static rules lack 
+adaptive pattern discovery 
+Present Study 
+(2026) 
+K means++ 
+Clustering 
+CGPA, 
+Attendance, 
+Assessment 
+(returning 
+students); 
+Attendance, 
+Assessment 
+(new students) 
+ 
+Yes ,Full Nigeria 
+(KIU, KIU) 
+Addresses all gaps: 
+Nigerian context, full 
+dashboard, ML clustering, 
+downloadable reports 
+Table 2.2: Comparative Summary of Related Studies 
+ 
+The comparative analysis in Table 2.2 reveals three consistent patterns across the reviewed 
+literature: K means dominates student segmentation research for its interpretability and efficiency; 
+
+=== PAGE 18 ===
+ 
+ 
+the translation of clustering outputs into deployable monitoring systems remains largely 
+unaddressed; and sub Saharan African institutional contexts with their specific operational 
+challenges are systematically und errepresented. The present study is uniquely positioned to 
+address all three simultaneously. 
+2.9 Identified Gaps in the Literature 
+ 
+ First, there is a pronounced geographical gap: the substantial majority of EDM studies have been 
+conducted in North American, European and Asian institutions. The structural realities of Nigerian 
+higher education ,including fragmented data management practices, limited technical 
+infrastructure, large class sizes and constrained access to commercial analytics platforms ,are not 
+addressed by systems designed for resource rich institutional environments (Adeyemi & Adeyemi, 
+2014; Dutt et al., 2015). 
+Second, there is a persistent implementa tion gap. While studies such as Pal  and Pal (2013) and 
+Bakar et al. (2015) validate the effectiveness of K means for student segmentation at the analytical 
+level, none extend their work to a fully deployable, interactive monitoring system. Bydžovská 
+(2016) explicitly identified the need for better visualization tools to support nontechnical decision 
+makers, yet no study in the reviewed literature implements a comprehensive administrative 
+dashboard that converts cluster outputs into actionable institutional intelligence. 
+Third and most specifically, there is a methodological gap in the Nigerian literature. Existing 
+Nigerian studies, Afolabi et al. (2019) and Olawale et al. (2021), rely on supervised classification 
+or static threshold rules, precluding the adaptive, exploratory pattern discovery that unsupervised 
+clustering enables. The present study addresses all three gaps through the development of a 
+machine learning based student segmentation system, implementing K means++ clustering within 
+a web based administrative dash board and situated specifically within the Nigerian university 
+context. 
+Fourth, none of the reviewed studies distinguish between returning and newly admitted students 
+when selecting clustering features. Pal and Pal (2013), Bakar et al. (2015) and Bydžovská (2016) 
+all rely on CGPA or semester GPA as a primary clu stering variable without addressing how such 
+systems would treat first semester students who have not yet accumulated any GPA history. This 
+is not a minor oversight, since a student segmentation system intended for continuous, semester 
+by semester institutional use must account for the reality that a portion of the student population 
+will always be newly admitted. The present study addresses this gap directly by implementing two 
+distinct clustering models, one for returning students incorporating CGPA, atte ndance rate and 
+assessment score and one for newly admitted students relying on attendance rate and assessment 
+
+=== PAGE 19 ===
+ 
+ 
+score alone, ensuring that no student is excluded or misclassified for lack of an academic history 
+that new students cannot yet possess. 
+ 
+2.10 Chapter Summary 
+This chapter has provided a comprehensive  and critically engaged review of the literature 
+underpinning the design of a machine learning based  student segmentation  and academic 
+monitoring system. Beginning with the theoretical foundations of machine learning  and the 
+rationale for adopting an unsupervised learning approach, the chapter progressed through 
+educational data mining, a comparative evaluation of clustering technique families and a detailed 
+examination of the K means  algorithm ,including its mathematical formulation, K means ++ 
+initialization, cluster number determination methods and documented strengths and limitations. 
+A critical review of seven related studies, summarized in Table 2.2, established the consensus on 
+K means as the preferred segmentation technique while exposing consistent deficiencies in system 
+implementation, visualization provision and geographic contextualization. The three gaps 
+identified in Section 2.9 provide the precise justification for the present study. Chapter Three 
+presents the research methodology employed to design  and implement the proposed system, 
+addressing these gaps in a structured and academically rigorous manner. 
+  
+
+=== PAGE 20 ===
+ 
+ 
+CHAPTER THREE 
+RESEARCH METHODOLOGY 
+3.1 Introduction 
+This chapter presents the methodology adopted for the design and implementation of the machine 
+learning based student segmentation  and academic monitoring system. It covers the research 
+design and conceptual framework, data collection  and preprocessing strategy, analysis of the 
+existing system and its shortcomings, full system architecture, use case and data flow descriptions, 
+database design, K Means algorithm implementation, tools  and technologies and the testing 
+strategy. Every methodological decision is grounded in the objectives established in Chapter One 
+and the evidence reviewed in Chapter Two. The development process is governed by the Waterfall 
+Software Development Life Cycle model, which organizes work into sequential phases of 
+requirements analysis, design, implementation, testing and evaluation, consistent with established 
+software engineering practice for projects with stable  and well defined requirements (Pressman  
+and Maxim, 2015; Sommerville, 2016). 
+3.2 Research Design 
+The research adopts a design and implementation methodology, the standard approach for applied 
+computer science projects whose primary deliverable is a functional software system (Oates, 
+2006). This methodology combines applied research with experimental evaluation: the analytical 
+core is quantitative, operating on numerical student academic performance data  and evaluated 
+through objective metrics including Within Cluster Sum of Squares and average silhouette scores. 
+The c ase study institution is Kashim Ibrahim University (KIU), selected on the basis of the 
+researcher's institutional affiliation and the practical availability of relevant student academic data 
+structures, consistent with established educational data mining research practice (Yin, 2018). 
+3.2.1 Conceptual Framework 
+The study is guided by an Input Process Output (IPO) conceptual framework, which organizes the 
+research activities into three logically sequential stages. In the input stage, student academic 
+records comprising CGPA, attendance rate and assessment scores are collected and uploaded into 
+the system. The processing stage applies data cleaning, outlier detection, normalization and K 
+Means clustering to the input data. The output stage produces student per formance segments 
+categorized as High Performing, Average Performing  and At Risk, accompanied by dashboard 
+visualizations and downloadable intervention reports. Figure 3.1 illustrates the framework. 
+
+=== PAGE 21 ===
+ 
+ 
+ 
+Figure 3.1: Input Process Output (IPO) Conceptual Framework 
+3.3 Data Collection, Variables and Preprocessing 
+The system accepts student academic data from two sources. Primary data consists of structured 
+records from the Department of Computer Science at KIU, including semester examination scores, 
+continuous assessment results and attendance registers maintained by course lecturers. A synthetic 
+dataset constructed to reflect realistic Nigerian university performance distributions supplements 
+primary data during prototype development, following accepted practice  when institutional data 
+access is subject to privacy constraints (Aggarwal, 2015). Three academic performance variables 
+serve as clustering features, selected because they are readily available within institutional records 
+and collectively capture long term academic achievement, classroom engagement  and short term 
+academic effort (Dutt, Aghabozrgi and Maizatul, 2015). 
+ 
+Variable Scale Source Justification Role in Model 
+Cumulative GPA 
+(CGPA) 0.00 to 5.00 Academic records 
+Long term 
+summative indicator 
+of academic 
+achievement 
+Clustering feature 
+Attendance Rate 0.00 to 100.00% Attendance registers 
+Classroom 
+engagement and 
+early predictor of 
+academic difficulty 
+(Marburger, 2001) 
+Clustering feature 
+Assessment Score 0.00 to 100.00 Course CA records 
+Short term academic 
+effort independent 
+of final 
+examinations 
+Clustering feature 
+Student ID, Name, 
+Level String / Integer Institutional records Administrative 
+identification only 
+Excluded from 
+clustering 
+Table 3.1: Clustering Feature Variables 
+Raw institutional data requires preprocessing before clustering can be applied reliably. The system 
+implements a four step pipeline. Step 1 (Data Cleaning) detects missing values a cross all three 
+feature columns  and flags duplicate Student ID entries, excluding incomplete records . Step 2 
+(Outlier Detection) applies the Interquartile Range method, flagging values below Q1 minus 1.5 
+times IQR or above Q3 plus 1.5 times IQR, since K Means is sensitive to extreme values that  
+
+
+=== PAGE 22 ===
+ 
+ 
+distort centroid positions (Jain, 2010). Step 3 (Min Max Normalization) rescales all features to the 
+range zero to one using the formula: x normalized equals x minus x minimum divided by x 
+maximum minus x minimum, preventing wider range variables from dominating Euclidean 
+distance calculations (Witten, Frank and Hall, 2016). Step 4 (Size Validation) confirms the dataset 
+contains at least thirty records before clustering is permitted to proceed. 
+3.3.1 Segmentation by Student Category: Returning and New Students 
+A closer look at the thre e clustering variables in Table 3.1 reveals a practical problem that only 
+becomes apparent once real institutional data is considered. Cumulative GPA, as its name implies, 
+is a measure that accumulates across multiple semesters of registered coursework. A student who 
+has just been admitted into the university has no such history to draw on. Treating a new student's 
+CGPA as zero, or substituting some arbitrary placeholder value, would not simply be a harmless 
+gap in the data. It would actively mislead the cl ustering algorithm, since K Means has no way of 
+knowing that a zero in this context means “not yet applicable” rather than “extremely poor 
+academic performance.” New students would either be forced into the same low performing cluster 
+as genuinely struggli ng returning students, or would distort the cluster boundaries for everyone 
+else depending on how the placeholder value happened to fall relative to the rest of the distribution. 
+For this reason, the system implemented in this study does not apply a single  clustering model 
+uniformly across the entire student population. Instead, two separate K Means models are trained, 
+each operating on the feature set that is actually available and meaningful for the category of 
+student concerned. 
+The first model, referred to throughout this dissertation as the Returning Students model, is applied 
+to students who have completed at least one prior semester and therefore possess an established 
+CGPA. This model uses all three variables described in Table 3.1, namely CGPA, Attendance Rate 
+and Assessment Score, consistent with the feature justification already given in that section. 
+The second model, referred to as the New Students model, is applied to students in their first 
+semester at the institution. Since these students have  no CGPA to contribute, this model is 
+restricted to the two variables that are available from day one of enrolment, Attendance Rate and 
+Assessment Score. Table 3.1(b) summarizes this distinction. 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 23 ===
+ 
+ 
+Model Applies To Clustering 
+Features Rationale 
+Returning Students 
+Model 
+ 
+Students with at 
+least one completed 
+semester 
+ 
+CGPA, Attendance 
+Rate, Assessment 
+Score 
+ 
+CGPA, Attendance 
+Rate, Assessment 
+Score 
+ 
+New Students 
+Model  
+ 
+Students in their 
+first semester of 
+enrolment 
+ 
+Attendance Rate, 
+Assessment Score 
+ 
+Classroom 
+engagement and 
+early predictor of 
+academic difficulty 
+(Marburger, 2001) 
+                     Table 3.1(b): Clustering Feature Sets by Student Category 
+Both models are otherwise identical in structure. Each passes through the same four step 
+preprocessing pipeline described above, is fitted using K Means with K Means plus plus 
+initialization and K set to three, and produces the same three performance categories of High 
+Performing, Average Performing and At Risk. The two models are trained and evaluated entirely 
+independently of one another, since pooling students with fundamentally different feature sets into 
+a single clustering exercise would violate the basic requirement that all observations in a K Means 
+run be described by the same variables. The administrator distinguishes between the two categories 
+at the point of data upload, with each student rec ord tagged according to whether the student is 
+returning or newly admitted, a distinction stored in the Students table described in Section 3.7. 
+ 
+3.4 Analysis of the Existing System and Proposed System Responses 
+Academic performance monitoring at KIU is entirely manual. Lecturers submit paper score sheets 
+each semester; departmental staff enter data i nto spreadsheets to compute GPA  and CGPA; 
+attendance registers are maintained separately and never cross referenced with performance data. 
+Review by the Head of Department occurs only after results are finalized, meaning intervention 
+consistently arrives after failure rather than before it. Table 3.2 maps each identified shortcoming 
+to its institutional impact and the specific response provided by the proposed system. 
+ 
+Shortcoming Impact Proposed System Response 
+Attendance and academic 
+data are never integrated 
+Relationships between 
+variables remain unexamined 
+Single pipeline combines 
+CGPA, attendance and 
+assessment score for joint 
+analysis 
+Monitoring is reactive; action 
+occurs only after failure 
+Critical intervention window 
+is consistently missed 
+Cluster based early warning 
+identifies at risk students each 
+semester before failure occurs 
+Manual data entry introduces 
+transcription errors 
+CGPA miscalculations affect 
+official transcripts 
+Automated CSV upload and 
+programmatic computation 
+eliminate manual entry errors 
+
+=== PAGE 24 ===
+ 
+ 
+Process cannot scale with 
+growing enrolment 
+Administrative burden 
+increases with cohort size 
+System processes hundreds of 
+records in seconds regardless 
+of cohort size 
+No visual reporting of 
+performance distributions 
+Administrators interpret raw 
+tables with no trend visibility 
+Interactive dashboard with 
+scatter, bar and radar chart 
+visualizations 
+No automated segmentation 
+for intervention planning 
+Grouping for support is 
+subjective and inconsistent 
+K Means produces objective, 
+reproducible cluster 
+assignments with action flags 
+Table 3.2: Existing System Shortcomings and Proposed System Responses 
+3.5 System Architecture 
+The proposed system follows a three tier client  server architecture comprising a Presentation 
+Layer, an Application Logic Layer and a Data Layer. This architectural pattern is widely adopted 
+in web based information systems for its modularity, maintainability  and clear separation of 
+concerns (Sommerville, 2016). Figure 3.2 presents the complete architecture showing all interface 
+modules, backend components and data storage elements. 
+ 
+Figure 3.2: Three Tier System Architecture 
+The Presentation Layer is a browser based interface communicating with the backend exclusively 
+through REST API calls. Three interface modules h andle dataset upload, analytics dashboard 
+visualization and report viewing respectively. The Application Logic Layer is implemented in 
+Python using Flask and contains six modules: the Data Upload Module validates and ingests CSV 
+files; the Preprocessing Pipeline applies the four step procedure described in Section 3.3; the 
+Clustering Engine runs K Means using sci kit learn with K Means plus  initialization; the Cluster 
+Evaluator assigns performance labels based on centroid ranking; the Report Generator produces 
+
+
+=== PAGE 25 ===
+ 
+ 
+downloadable CSV output with action flags; and the Auth Manager implements bcrypt password 
+hashing and role based access control (Grinberg, 2018; Pedregosa et al., 2011). The Data Layer  
+uses SQLite during development for zero configuration setup, with a migration path to MySQL 
+for production deployment, both managed through the SQL  Alchemy Object Relational Mapper 
+(Bayer, 2012). 
+3.6 Use Case Diagram, Data Flow Diagram and Entity Relationship Diagram 
+Figure 3.3 presents the UML use case diagram showing the Administrator actor and the seven use 
+cases supported by the system. 
+ 
+Figure 3.3: UML Use Case Diagram 
+Figure 3.4 presents the st andard Level 1 Dat a Flow Diagram drawn using Gane  and Sarson 
+notation, illustrating how data moves through the system's four primary processes  and two data 
+stores. 
+
+
+=== PAGE 26 ===
+ 
+ 
+ 
+Figure 3.4: Level 1 Data Flow Diagram 
+Figure 3.5 presents the Entity Relationship Diagram showing the four database tables  and their 
+cardinality relationships. 
+
+
+=== PAGE 27 ===
+ 
+ 
+ 
+Figure 3.5: Entity Relationship Diagram 
+ 
+ 
+ 
+
+
+=== PAGE 28 ===
+ 
+ 
+UC Name Precondition Description 
+UC01 Upload Dataset Admin logged in; CSV 
+file prepared 
+Admin selects a CSV file 
+conforming to the 
+expected schema. System 
+validates structure, runs 
+the preprocessing 
+pipeline, displays a 
+summary report and stores 
+the dataset. 
+UC02 Run Clustering Validated dataset is 
+available 
+Admin selects a stored 
+dataset and initiates K 
+Means clustering with K 
+set to 3. System assigns 
+cluster labels, computes 
+WCSS and silhouette 
+score and redirects to the 
+dashboard. 
+UC03 View Dashboard Clustering analysis 
+completed 
+Admin views scatter 
+plots, bar charts, radar 
+charts, Elbow and 
+Silhouette diagnostic plots 
+and cluster summary 
+statistics. All chart 
+elements are interactive. 
+UC04 View Student Profile Clustering analysis 
+completed 
+Admin searches for a 
+student by name or matric 
+number to view individual 
+feature values, cluster 
+label and recommended 
+action flag. 
+UC05 Download Report Clustering analysis 
+completed 
+Admin downloads a CSV 
+report containing all 
+student cluster 
+assignments and action 
+flags for use in advisory 
+meetings and 
+departmental records. 
+Table 3.3: Primary Use Case Descriptions 
+3.7 Database Design 
+The relational database comprises four tables. A one to many relationship links Users to Datasets, 
+Datasets to Students and Datasets to Cluster Results, enabling one dataset to be clustered multiple 
+times and supporting longitudinal performance tracking across semesters, as shown in Figure 3.5. 
+Table 3.4 presents the complete schema. 
+ 
+ 
+ 
+ 
+
+=== PAGE 29 ===
+ 
+ 
+Table and Field Data Type Constraint Description 
+USERS   Stores administrator 
+account credentials 
+  User_id INTEGER PK  AUTO Auto incremented 
+primary key 
+  Username VARCHAR(80) UNIQUE  NN Unique administrator 
+login identifier 
+  Passwordhash VARCHAR(128) NN bcrypt hashed password; 
+plain text is never stored 
+  created DATETIME NN Timestamp of account 
+creation 
+DATASETS   Records each uploaded 
+CSV file and metadata 
+  dataset,id INTEGER PK  AUTO Auto incremented 
+primary key 
+  Filename VARCHAR(255) NN Original uploaded 
+filename 
+  Upload_date DATETIME NN Timestamp of the upload 
+  Record_count INTEGER NN Number of student 
+records in the dataset 
+  Uploaded_by INTEGER FK to Users Administrator account 
+that performed the upload 
+STUDENTS   Stores individual 
+student academic 
+records per dataset 
+  Student_id INTEGER PK  AUTO Auto incremented 
+primary key 
+Student_type 
+ 
+VARCHAR(20) NN 
+Indicates whether the 
+student is "Returning" or 
+"New", determining 
+which clustering model 
+the record is routed to 
+  Matric_number VARCHAR(30) NN KIU institutional student 
+identifier 
+  Full_name VARCHAR(150) NN Student full name 
+  Level INTEGER NN Academic level: 100, 200, 
+300or 400 
+  Cgpa FLOAT 0.00 to 5.00 Cumulative Grade Point 
+Average 
+  Attendance_rate FLOAT 0.00 to 100.00 Semester attendance as a 
+percentage 
+  Assessment_score FLOAT 0.00 to 100.00 Average continuous 
+assessment score 
+  Dataset_id INTEGER FK to Datasets Dataset this student 
+record belongs to 
+CLUSTERRESULTS   Stores clustering output 
+per student per analysis 
+run 
+  result,id INTEGER PK  AUTO Auto incremented 
+primary key 
+  Dataset_id INTEGER FK to Datasets Dataset analyzed in this 
+run 
+  Student_id INTEGER FK to Students Student this result 
+belongs to 
+
+=== PAGE 30 ===
+ 
+ 
+  Cluster_label VARCHAR(30) NN 
+High Performing, 
+Average Performing or At 
+Risk 
+  Action_flag VARCHAR(80) NN 
+Recommended 
+institutional response for 
+this student 
+  Wcss FLOAT  Within Cluster Sum of 
+Squares for this run 
+  Silhouette_score FLOAT  Average silhouette score 
+for this run 
+  Analysis_date DATETIME NN Timestamp of the 
+clustering run 
+Table 3.4: Database Schema 
+One addition to the STUDENTS table deserves separate mention. Because the system trains two 
+distinct clustering models depending on whethe r a student is returning or newly admitted, as 
+described in Section 3.3.1, the database needs a way of recording which category each student falls 
+into at the point of data entry. A student_type field is therefore included in the STUDENTS table, 
+storing either "Returning" or "New" for each record. This field is populated automatically during 
+the CSV upload and validation stage, drawing on whichever column the administrator's dataset 
+provides for level or admission status, and is used downstream by the Clust ering Engine to route 
+each record to the correct model before any preprocessing begins. Without this field, the system 
+would have no principled way of deciding which of the two models should process a given student, 
+and the safeguard against feeding an incomplete CGPA value into the Returning Students model, 
+discussed in Section 3.3.1, would not be enforceable at the data layer. 
+ 
+3.8 K Means Algorithm Implementation 
+The Clustering Engine implements K Means using scikit learn's KMeans class configured with K 
+Means plus initialization, n init set to 10 independent runs  and max iter set to 300, retaining the 
+solution with the lowest WCSS across all runs (Pedregosa et al., 2011; Aggarwal, 2015). The 
+algorithm receives the Min Max normalized feature matrix and minimizes the objective function: 
+J equals the sum over K clusters of the sum over all points xi in cluster Ck of the squared Euclidean 
+distance between xi and the cluster centroid mu sub k. Figure 3.6 presents the complete algorithm 
+flowchart. 
+
+=== PAGE 31 ===
+ 
+ 
+ 
+
+
+=== PAGE 32 ===
+ 
+ 
+3.8.1 Model Evaluation Strategy: Train Test Validation 
+A recurring question in unsupervised learning is how a clustering model can be evaluated at all, 
+since there are no preexisting labels against which predictions can be checked for accuracy in the 
+way a supervised classifier would be tested. This does not mean the model escapes evaluation 
+altogether. What can and should be tested is whether the clusters a model discovers on one portion 
+of the data continue to hold up when the model is confronted with records it has never seen. If the 
+structure the algorithm finds is genuine and not simply an artefact of the particular sample it  was 
+trained on, then new records should fall into similarly well formed clusters when assigned using 
+the same centroids. 
+To test this, both the Returning Students model and the New Students model in this study follow 
+a train test split, with eighty percen t of each cleaned dataset used for training and the remaining 
+twenty percent held back entirely during training. The split is performed after outlier removal but 
+before normalization, and the Min Max scaler itself is fitted only on the training portion, si nce 
+allowing information from the test set to influence the scaling would quietly leak knowledge of 
+unseen data back into the model and overstate how well it generalizes (Witten, Frank and Hall, 
+2016). 
+K Means is then trained on the eighty percent training  set in the usual way described in Sect ion 
+3.8, using K Means plus  initialization with K set to three. The resulting centroids are treated as 
+fixed. Each record in the twenty percent test set is then assigned to whichever of these three 
+centroids it lies closest to, without any retraining or adjustment of the centroids themselves. Two 
+diagnostics are computed for both the training set and the test set separately, the Within Cluster 
+Sum of Squares and the average Silhouette Score. If these two figures r emain close between the 
+training and test sets, this is taken as evidence that the clustering structure is stable and not merely 
+memorized noise specific to the training sample. A sharp deterioration in test set performance, by 
+contrast, would indicate that the model had over fit to the training data and could not be trusted to 
+classify new students reliably each semester. 
+This evaluation is carried out independently for each of the two models, since the Returning 
+Students model and the New Students model operate on different feature sets and populations and 
+therefore need to be validated on their own terms rather than pooled together. 
+ 
+3.9 Tools, Technologies and System Requirements 
+ 
+Category Technology Version Justification and Role 
+SOFTWARE    
+Backend Language Python 3.11+ 
+Dominant language in 
+data science with an 
+extensive machine 
+learning library ecosystem 
+(Pedregosa et al., 2011) 
+Web Framework Flask 3.0+ 
+Lightweight Python 
+framework suited to 
+REST API development 
+with machine learning 
+
+=== PAGE 33 ===
+ 
+ 
+backends (Grinberg, 
+2018) 
+ML Library scikit learn 1.4+ 
+Industry st andard library 
+providing optimised K 
+Means plus plus 
+implementation with 
+silhouette scoring 
+Data Processing Pandas and NumPy 2.0 and 1.26 
+St andard Python libraries 
+for CSV parsing, tabular 
+manipulation and 
+numerical computation 
+(McKinney, 2010) 
+Database SQLite and MySQL 3.x and 8.x 
+SQLite for development; 
+MySQL for production; 
+both managed via SQL 
+Alchemy ORM (Bayer, 
+2012) 
+Frontend Bootstrap 5 and Chart.js 5.3 and 4.4 
+Bootstrap for responsive 
+layout; Chart.js for 
+interactive scatter, bar and 
+radar charts 
+Version Control Git and GitHub 2.40+ 
+Source code management, 
+change tracking and cloud 
+backup 
+HARDWARE Minimum  Recommended 
+Processor Intel Core i3 at 2.0 GHz  
+Intel Core i5 or AMD 
+Ryzen 5 at 2.4 GHz or 
+better 
+RAM 4 GB  8 GB or more 
+Storage 50 GB HDD  100 GB SSD 
+Browser Any modern browser  
+Google Chrome 110 or 
+Mozilla Firefox 110 or 
+later 
+Table 3.5: Tools, Technologies and System Requirements 
+  
+
+=== PAGE 34 ===
+ 
+ 
+3.10 System Testing Strategy 
+System testing will be conducted across four levels to verify that the implemented system satisfies 
+its functio nal and nonfunctional requirements (Sommerville, 2016). Table 3.6 summarizes the 
+planned testing approach, scope and acceptance criteria at each level. 
+ 
+Level Scope Method and Tool Acceptance Criterion 
+Unit Testing 
+Individual backend 
+modules: Upload, 
+Preprocessing Pipeline, 
+Clustering Engine, 
+Cluster Evaluator, Report 
+Generator 
+Python unittest 
+framework applied to 
+normal inputs and edge 
+cases 
+All modules pass 
+expected output tests; 
+WCSS decreases 
+monotonically as K 
+increases 
+Integration Testing 
+End to end pipeline from 
+CSV upload through 
+preprocessing, clustering 
+and dashboard rendering 
+Flask test client for 
+programmatic API 
+endpoint calls without a 
+live server 
+Correct data transmission 
+across all modules; charts 
+render accurate cluster 
+data 
+System Testing 
+All use cases in Table 3.3 
+and performance 
+benchmarks for datasets 
+of 50, 100, 250 and 500 
+records 
+Manual functional testing 
+and automated 
+performance timing 
+scripts 
+All use cases execute 
+without error; clustering 
+of 500 records will 
+complete in under ten 
+seconds 
+User Acceptance Testing 
+System will be evaluated 
+by academic 
+administrators at KIU 
+performing realistic 
+operational tasks 
+System Usability Scale 
+questionnaire (Brooke, 
+1996) administered after 
+task completion 
+An average SUS score of 
+70 or above, the 
+established threshold for 
+Good usability, will 
+constitute acceptance 
+Table 3.6: System Testing Strategy 
+3.11 Ethical Considerations 
+The research involves student academic data, which constitutes personally identifiable information 
+requiring appropria te safeguards. Four ethical principles govern the study. First, data 
+anonymisation: all real student records used in prototype development are anonymised by 
+replacing names with pseudonyms  and matriculation numbers with synthetic identifiers  and no 
+real st udent data appears in any figure, table  or report in this dissertation. Second, data 
+confidentiality: student data is used solely for the purposes of this research and is not shared with 
+or disclosed to any third party. Third, data security: the syste m imp lements bcrypt password 
+hashing, session based authentication and role based access control, ensuring that database records 
+are accessible only to authorized administrators. Fourth, non discriminatory application: cluster 
+labels are analytical tools intended to guide the allocation of academic support resources  and are 
+not permanent judgments of student ability; system documentation explicitly advises 
+administrators that cluster membership must be interpreted a longside contextual information and 
+must not be communicated to students as definitive academic assessments. These principles are 
+
+=== PAGE 35 ===
+ 
+ 
+consistent with the Nigerian Data Protection Act (NDPA, 2023)  and the ethical st andards 
+recommended by the Association for Educational Communications  and Technology (AECT, 
+2016). 
+3.12 Chapter Summary 
+This chapter has presented the full methodology underpinning the design  and implementation of 
+the machine learning based student segmen tation and academic monitoring system at KIU. The 
+Waterfall SDLC model governs the development process and the IPO conceptual framework 
+organizes the study's analytical activities into clearly defined input, process  and output stages. A 
+systematic analysis of the existing manual monitoring system identified six specific shortcomings, 
+each directly addressed by the proposed system. The three tier architecture, six backend modules, 
+UML use case diagram, standard Level 1 DFD, ER diagram and complete database schema were 
+all documented with supporting figures  and tables. The K Means implementation was de scribed 
+with its objective function formula  and a detailed algorithmic flowchart. Technology selections 
+were justified, system requirements were specified, a four level testing strategy with future tense 
+acceptance criteria was defined  and ethical safeguar ds consistent with the NDPA (2023) were 
+articulated. Chapter Four will present the results of the system implementation, including cluster 
+analysis outputs, dashboard visualizations, evaluation metrics and user acceptance testing findings. 
+ 
+  
+
+=== PAGE 36 ===
+ 
+ 
+REFERENCES 
+Adeyemi, T. O., & Adeyemi, O. S. (2014). Information and communication technology and administration 
+of universities in Nigeria. International Journal of Educational Administration and Policy Studies, 
+6(3), 34–45. https://doi.org/10.5897/IJEAPS2013.0333 
+Aggarwal, C. C. (2015). Data mining: The textbook. Springer. https://doi.org/10.1007/978,3,319,14142,8 
+Baker, R. S., & Yacef, K. (2009). The state of educational data mining in 2009: A review and future visions. 
+Journal of Educational Data Mining, 1(1), 3–17. 
+Bishop, C. M. (2006). Pattern recognition and machine learning. Springer. 
+Bydžovská, H. (2016). A comparative analysis of techniques for predicting student performance. In 
+Proceedings of the 9th International Conference on Educational Data Mining (EDM 2016 ) (pp. 
+306–311). International Educational Data Mining Society. 
+Dutt, A., Aghabozrgi, S., & Maizatul, A. B. I. (2015). Clustering algorithms applied in educational data 
+mining. Inter national Journal of Information  and Electronics Engineering, 5(2), 112 –116. 
+https://doi.org/10.7763/IJIEE.2015.V5.513 
+Few, S. (2006). Information dashboard design: The effective visual communication of data. O'Reilly Media. 
+Han, J., Kamber, M., & Pei, J. (2012). Data mining: Concepts and techniques (3rd ed.). Morgan Kaufmann. 
+Jain, A. K. (2010). Data clustering: 50 years beyond K means. Pattern Recognition Letters, 31(8), 651 –
+666. https://doi.org/10.1016/j.patrec.2009.09.011 
+Kotsiantis, S. B., Pierrakeas, C. J., & Pintelas, P. E. (2010). Predicting students' performance in distance 
+learning using machine learning techniques. Applied Artificial Intelligence, 18(5), 411 –426. 
+https://doi.org/10.1080/08839510490442058 
+Kovacic, Z. J. (2010). Early prediction of student success: Mining students' enrolment data. In Proceedings 
+of the Inf orming Science and IT Education Conference (InSITE 2010) (pp. 647 –665). Informing 
+Science Institute. 
+Lloyd, S. P. (1982). Least squares quantization in PCM. IEEE Transactions on Information Theory, 28(2), 
+129–137. https://doi.org/10.1109/TIT.1982.1056489 
+MacQueen, J. B. (1967). Some methods for classification  and analysis of multivariate observations. In L. 
+M. Le Cam & J. Neyman (Eds.), Proceedings of the 5th Berkeley Symposium on Mathematical 
+Statistics and Probability (Vol. 1, pp. 281–297). University of California Press. 
+
+=== PAGE 37 ===
+ 
+ 
+Mitchell, T. M. (1997). Machine learning. McGraw,Hill. 
+National Universities Commission (NUC). (2022). NUC annual statistical digest. Federal Republic of 
+Nigeria. https://www.nuc.edu.ng 
+Nworie, J. (2012). Using the Delphi technique in educational technology research. TechTrends, 55(5), 24–
+30. 
+Pena,Ayala, A. (2014). Educational data mining: A survey and a data mining based analysis of recent 
+works. Expert Systems with Applications, 41(4), 1432–1462. 
+https://doi.org/10.1016/j.eswa.2013.08.042 
+Romero, C., & Ventura, S. (2010). Educational data mining: A review of the state of the art. IEEE 
+Transactions on Systems, Man and Cybernetics Part C: Applications and Reviews, 40(6), 601–618. 
+https://doi.org/10.1109/TSMCC.2010.2053532 
+Russell, S., & Norvig, P. (2016). Artificial intelligence: A modern approach (3rd ed.). Pearson Education. 
+Witten, I. H., Frank, E., & Hall, M. A. (2016). Data mining: Practical machine learning tools and 
+techniques (4th ed.). Morgan Kaufmann. 
+Adeyemi, T. O., & Adeyemi, O. S. (2014). Information and communication technology and administration 
+of universities in Nigeria. International Journal of Educational Administration and Policy Studies, 
+6(3), 34–45. 
+Afolabi, I. T., Gbadamosi, B., Oyelaran, O. A., Arowolo, M. O., & Arowol o, T. E. (2019). Predicting 
+students' academic performance using decision tree. International Journal of Scientific  and 
+Engineering Research, 10(2), 149–153. 
+Arthur, D., & Vassilvitskii, S. (2007). K means++: The advantages of careful seeding. In Proceedings of 
+the 18th Annual ACM SIAM Symposium on Discrete Algorithms (pp. 1027–1035). SIAM. 
+Bakar, Z. A., Rosbi, S., & Hamid, H. A. (2015). Segmentation of student academic performance using K 
+means clustering for higher educational institutions. Journal of Advanced Research in Dynamical 
+and Control Systems, 7(4), 1–14. 
+Baker, R. S., & Yacef, K. (2009). The state of educational data mining in 2009: A review and future visions. 
+Journal of Educational Data Mining, 1(1), 3–17. 
+Bishop, C. M. (2006). Pattern recognition and machine learning. Springer. 
+Bydžovská, H. (2016). A comparative analysis of techniques for predicting student performance. In 
+Proceedings of the 9th International Conference on Educational Data Mining (pp. 306 –311). 
+International Educational Data Mining Society. 
+
+=== PAGE 38 ===
+ 
+ 
+Dutt, A., Aghabozrgi, S., & Maizatul, A. B. I. (2015). Clustering algorithms applied in educational data 
+mining. International Journal of Information and Electronics Engineering, 5(2), 112–116. 
+Ester, M., Kriegel, H.,P., S ander, J., & Xu, X. (1996). A density,based algorithm for discovering clusters 
+in large spatial databases with noise. In Proceedings of the 2nd ACM SIGKDD International 
+Conference on Knowledge Discovery and Data Mining (pp. 226–231). AAAI Press. 
+Eze, S. C., Chinedu ,Eze, V. C., Bello, A. O., & Inegbedion, H. (2018). Exploratory evaluation of the 
+challenges of e  learning in Nigerian unive rsities. Journal of Engineering  and Applied Sciences, 
+13(1), 111–120. 
+Gatherer, D., & Manning, F. C. (1998). Correlation of examination performance with attendance: A study 
+of a first,year life sciences course. Biochemical Education, 26(2), 121–123. 
+Han, J., Kamber, M., & Pei, J. (2012). Data mining: Concepts and techniques (3rd ed.). Morgan Kaufmann. 
+Huang, S., & Fang, N. (2013). Predicting st udent academic performance in an engineering dynamics 
+course: A comparison of four types of predictive mathematical models. Computers and Education, 
+61, 133–145. 
+Jain, A. K. (2010). Data clustering: 50 years beyond K means. Pattern Recognition Letters, 31( 8), 651–
+666. 
+Kaufman, L., & Rousseeuw, P. J. (1987). Clustering by means of medoids. In Y. Dodge (Ed.), Statistical 
+Data Analysis Based on the L1 Norm and Related Methods (pp. 405–416). North Holl and. 
+Kemper, L., Vorhies, G., & Martens, A. (2020). Predicting student dropout: A machine learning approach. 
+European Journal of Higher Education IT, 7(1), 1–17. 
+Ketchen, D. J., & Shook, C. L. (1996). The application of cluster analysis in strategic management 
+research. Strategic Management Journal, 17(6), 441–458. 
+Kotsiantis, S. B., Pierrakeas, C. J., & Pintelas, P. E. (2010). Predicting students' performance in distance 
+learning using machine learning techniques. Applied Artificial Intelligence, 18(5), 411–426. 
+Kovacic, Z. J. (2010). Early prediction of student success: Mining students' enrolment data. In Proceedings 
+of the Informing Science and IT Education Conference (pp. 647–665). Informing Science Institute. 
+LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521(7553), 436–444. 
+Lloyd, S. P. (1982). Least squares quantization in PCM. IEEE Transactions on Information Theory, 28(2), 
+129–137. 
+MacQueen, J. B. (1967). Some methods for classification  and analysis of multivariate observations. In 
+Proceedings of the 5th Berkeley Symposium on Mathematical Statistics and Probability (Vol. 1, pp. 
+281–297). University of California Press. 
+
+=== PAGE 39 ===
+ 
+ 
+Marburger, D. R. (2001). Absenteeism and undergraduate exam performance. Journal of Economic 
+Education, 32(2), 99–109. 
+Mitchell, T. M. (1997). Machine learning. McGraw Hill. 
+Olaleye, F. O. (2016). Technology,enhanced academic records management in Nigerian universities. 
+African Journal of Library, Archives and Information Science, 26(2), 113–122. 
+Olawale, B. E., Alabi, O., & Ayo, C. K. (2021). Development of an automated stud ent academic 
+performance monitoring system for Nigerian polytechnics. Journal of Information Technology and 
+Digital World, 3(2), 89–102. 
+Pal, A. K., & Pal, S. (2013). Analysis and mining of educational data for predicting the performance of 
+students. International Journal of Electronics Communication  and Computer Engineering, 4(5), 
+1560–1565. 
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, 
+P., Weiss, R., Dubourg, V., V  anderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., 
+& Duchesnay, E. (2011). Scikit,learn: Machine learning in Python. Journal of Machine Learning 
+Research, 12, 2825–2830. 
+Pena,Ayala, A. (2014). Educational data mining: A survey  and a data mining  based analysis of recen t 
+works. Expert Systems with Applications, 41(4), 1432–1462. 
+Romero, C., & Ventura, S. (2010). Educational data mining: A review of the state of the art. IEEE 
+Transactions on Systems, Man and Cybernetics,Part C, 40(6), 601–618. 
+Rousseeuw, P. J. (1987).  Silhouettes: A graphical aid to the interpretation  and validation of cluster 
+analysis. Journal of Computational and Applied Mathematics, 20, 53–65. 
+Russell, S., & Norvig, P. (2016). Artificial intelligence: A modern approach (3rd ed.). Pearson Education. 
+Stinebrickner, R., & Stinebrickner, T. (2014). Academic performance  and college dropout: Using 
+longitudinal expectations data to estimate a learning model. Journal of Labor Economics, 32(3), 
+601–644. 
+Tibshirani, R., Walther, G., & Hastie, T. (2001). Estimating the number of clusters in a data set via the gap 
+statistic. Journal of the Royal Statistical Society: Series B, 63(2), 411–423. 
+Witten, I. H., Frank, E., & Hall, M. A. (2016). Data mining: Practical machine learning tools  and 
+techniques (4th ed.). Morgan Kaufmann. 
+York, T. T., Gibson, C., & Rankin, S. (2015). Defining and measuring academic success. Practical 
+Assessment, Research and Evaluation, 20(5), 1–20. 
+AECT. (2016). Code of ethics. Association for Educational Communications  and Technology. 
+https://aect.org/ethics.php 
+
+=== PAGE 40 ===
+ 
+ 
+Aggarwal, C. C. (2015). Data mining: The textbook. Springer. 
+Arthur, D. and Vassilvitskii, S. (2007). K means++: The advantages of careful seeding. In Proceedings of 
+the 18th Annual ACM SIAM Symposium on Discrete Algorithms (pp. 1027 to 1035). SIAM. 
+Bayer, M. (2012). SQLAlchemy. In A. Brown  and G. Wilson (Eds.), The Architecture of Open Source 
+Applications (Vol. 2). aosabook.org. 
+Brooke, J. (1996). SUS: A quick and dirty usability scale. In P. W. Jordan et al. (Eds.), Usability Evaluation 
+in Industry (pp. 189 to 194). Taylor and Francis. 
+Chart.js. (2023). Chart.js documentation. https://www.chartjs.org/docs/latest/ 
+Dutt, A., Aghabozrgi, S. and Maizatul, A. B. I. (2015). Clustering algorithms applied in educational data 
+mining. International Journal of Information and Electronics Engineering, 5(2), 112 to 116. 
+Grinberg, M. (2018). Flask web development: Developing web applications with Python (2nd ed.). O'Reilly 
+Media. 
+Han, J., Kamber, M.  and Pei, J. (2012). Data mining: Concepts  and techniques (3rd ed.). Morgan 
+Kaufmann. 
+Jain, A. K. (2010). Data clustering: 50 years beyond K means. Pattern Recognition Letters, 31(8), 651 to 
+666. 
+Marburger, D. R. (2001). Absenteeism and undergraduate exam performance. Journal of Economic 
+Education, 32(2), 99 to 109. 
+McKinney, W. (2010). Data structures for statistical computing in Python. In Proceedings of the 9th Python 
+in Science Conference (pp. 56 to 61). 
+Nigerian Data Protection Act (NDPA). (2023). Federal Republic of Nigeria Official Gazette, 110 (154). 
+https://ndpc.gov.ng 
+Oates, B. J. (2006). Researching information systems and computing. SAGE Publications. 
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, 
+P., Weiss, R., Dubourg, V., V  anderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M.  
+and Duchesnay, E. (2011). Scikit learn: Machine learning in Python. Journal of Machine Learning 
+Research, 12, 2825 to 2830. 
+Pressman, R. S.  and Maxim, B. R. (2015). Software engineering: A prac titioner's approach (8th ed.). 
+McGraw Hill Education. 
+Provos, N. and Mazieres, D. (1999). A future adaptable password scheme. In Proceedings of the USENIX 
+Annual Technical Conference (pp. 81 to 91). USENIX Association. 
+Rousseeuw, P. J. (1987). Silhouettes:  A graphical aid to the interpretation  and validation of cluster 
+analysis. Journal of Computational and Applied Mathematics, 20, 53 to 65. 
+Sommerville, I. (2016). Software engineering (10th ed.). Pearson Education. 
+Witten, I. H., Frank, E.  and Hall, M. A. (2016). Data mining: Practical machine learning tools  and 
+techniques (4th ed.). Morgan Kaufmann. 
+
+=== PAGE 41 ===
+ 
+ 
+Yin, R. K. (2018). Case study research and applications: Design and methods (6th ed.). SAGE Publications. 
+ 
+ 
+ 
+ 
+ 
+ 
+

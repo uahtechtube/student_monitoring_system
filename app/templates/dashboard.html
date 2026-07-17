@@ -1,0 +1,1842 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | KIU Student Monitoring{% endblock %}
+
+{% block container_class %}container-fluid px-md-4{% endblock %}
+{% block nav_container_class %}container-fluid px-md-4{% endblock %}
+
+{% block content %}
+<style>
+  /* Sidebar Specific Styling */
+  .sidebar-col {
+    border-right: 1px solid var(--card-border);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    padding-bottom: 2rem;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .sidebar-col::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-column: column;
+    gap: 0.5rem;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.2rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+  }
+  .sidebar-link.active {
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  }
+  
+  /* Metrics Card Glows */
+  .metric-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+  .metric-card-primary::before { background: var(--accent-indigo); }
+  .metric-card-success::before { background: var(--accent-emerald); }
+  .metric-card-warning::before { background: var(--accent-amber); }
+  .metric-card-danger::before { background: var(--accent-rose); }
+
+  /* Custom badge sizing */
+  .badge-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  
+  /* Tab Section Visibility */
+  .dashboard-section {
+    display: none;
+  }
+  .dashboard-section.active {
+    display: block;
+  }
+
+  /* Table styling */
+  .table-responsive {
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .table {
+    margin-bottom: 0;
+    background-color: transparent !important;
+  }
+  .table th {
+    background-color: rgba(17, 24, 39, 0.6) !important;
+    border-bottom: 1px solid var(--card-border) !important;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .table td {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--card-border) !important;
+    color: var(--text-primary);
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+  .table tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+  }
+</style>
+
+<div class="row g-4">
+  <!-- Sidebar Navigation Column -->
+  <div class="col-lg-3 col-xl-2 sidebar-col">
+    <div class="d-flex flex-column gap-4 py-2">
+      <!-- Dataset Selector -->
+      <div>
+        <label class="form-label small text-muted text-uppercase fw-semibold mb-2">Select Dataset</label>
+        <select id="globalDatasetSelect" class="form-select form-select-sm py-2">
+          <option value="" disabled selected>Loading datasets...</option>
+        </select>
+      </div>
+
+      <div class="sidebar-nav d-flex flex-column">
+        <a class="sidebar-link active" data-target="section-overview">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Overview
+        </a>
+        <a class="sidebar-link" data-target="section-upload">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Upload Center
+        </a>
+        <a class="sidebar-link" data-target="section-lookup">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Student Search
+        </a>
+        <a class="sidebar-link" data-target="section-explorer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Data Explorer
+        </a>
+        <a class="sidebar-link" data-target="section-diagnostics">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Model Diagnostics
+        </a>
+        <a class="sidebar-link" data-target="section-history">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Analysis History
+        </a>
+        {% if current_user.role == 'Admin' %}
+        <a class="sidebar-link" data-target="section-users" id="btnNavUsers">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          User Management
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Column -->
+  <div class="col-lg-9 col-xl-10">
+    <!-- Top Global Metrics Summary (Visibile for Overview/Explorer) -->
+    <div id="metricsRow" class="row g-3 mb-4 d-none">
+      <div class="col-sm-6 col-md-3">
+        <div class="glass-card p-3 metric-card metric-card-primary">
+          <div class="small text-muted mb-1 text-uppercase fw-semibold">Total Students</div>
+          <h3 id="statTotalStudents" class="text-white fw-bold mb-0">-</h3>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="glass-card p-3 metric-card metric-card-success">
+          <div class="small text-muted mb-1 text-uppercase fw-semibold">Avg Attendance</div>
+          <h3 id="statAvgAttendance" class="text-white fw-bold mb-0">-</h3>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="glass-card p-3 metric-card metric-card-warning">
+          <div class="small text-muted mb-1 text-uppercase fw-semibold">Avg Assessment</div>
+          <h3 id="statAvgAssessment" class="text-white fw-bold mb-0">-</h3>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="glass-card p-3 metric-card metric-card-danger">
+          <div class="small text-muted mb-1 text-uppercase fw-semibold">At-Risk Rate</div>
+          <h3 id="statAtRiskRate" class="text-white fw-bold mb-0">-</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State Placeholder -->
+    <div id="dashboardEmptyState" class="glass-card p-5 text-center my-5">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--card-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <h5 class="text-white">No datasets uploaded yet</h5>
+      <p class="text-muted small">Please head over to the Upload Center in the sidebar to add your class Excel/CSV file.</p>
+    </div>
+
+    <!-- Dashboard Sections -->
+    <div id="dashboardContent" class="d-none">
+
+      <!-- SECTION: Overview -->
+      <section id="section-overview" class="dashboard-section active">
+        <div class="glass-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <h5 class="mb-0 text-white fw-bold">Performance Segmentation Charts</h5>
+            <div class="d-flex gap-2">
+              <select id="studentTypeViewSelect" class="form-select form-select-sm py-1 px-3" style="width: auto;">
+                <option value="Returning">Returning Students Model</option>
+                <option value="New">New Students Model</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: rgba(17, 24, 39, 0.4); border: 1px solid var(--card-border);">
+                <h6 class="text-white small mb-2 fw-semibold text-center">Cluster Distribution (Features Space)</h6>
+                <div style="height: 250px; position: relative;"><canvas id="scatterChart"></canvas></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: rgba(17, 24, 39, 0.4); border: 1px solid var(--card-border);">
+                <h6 class="text-white small mb-2 fw-semibold text-center">Student Counts per Cluster</h6>
+                <div style="height: 250px; position: relative;"><canvas id="barChart"></canvas></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: rgba(17, 24, 39, 0.4); border: 1px solid var(--card-border);">
+                <h6 class="text-white small mb-2 fw-semibold text-center">Performance Profile (Centroids)</h6>
+                <div style="height: 250px; position: relative;"><canvas id="radarChart"></canvas></div>
+              </div>
+            </div>
+            <div class="col-md-6 d-flex flex-column gap-3">
+              <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center">
+                <h6 class="text-white fw-bold mb-2">Segment Definitions & Policies</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 small text-muted mb-0">
+                  <li class="d-flex align-items-start gap-2">
+                    <span class="badge-dot mt-1" style="background: #10b981"></span>
+                    <div><strong class="text-white">High Performing:</strong> No active interventions. Eligible for scholarships, honors, or peer-tutoring leadership.</div>
+                  </li>
+                  <li class="d-flex align-items-start gap-2">
+                    <span class="badge-dot mt-1" style="background: #f59e0b"></span>
+                    <div><strong class="text-white">Average Performing:</strong> Regular progress checks. Optional extra-credit tutorials suggested.</div>
+                  </li>
+                  <li class="d-flex align-items-start gap-2">
+                    <span class="badge-dot mt-1" style="background: #f43f5e"></span>
+                    <div><strong class="text-white">At Risk:</strong> Flagged for probation reviews and mandatory academic counseling.</div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Upload Center -->
+      <section id="section-upload" class="dashboard-section">
+        <div class="glass-card p-4">
+          <h5 class="mb-3 text-white fw-bold">Upload Class Datasets</h5>
+          <p class="text-muted small">Upload `.csv` or `.xlsx` files. The dataset will be validated against requirements before database storage.</p>
+          
+          <div id="dropzone" class="border border-dashed rounded-3 p-5 text-center cursor-pointer position-relative mb-4" style="border-color: var(--card-border) !important; background: rgba(17, 24, 39, 0.3); transition: all 0.2s;">
+            <input type="file" id="fileInput" accept=".csv,.xlsx" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" style="z-index: 10;">
+            <div class="py-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-indigo)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+              <h5 class="text-white fw-bold">Drag & drop your file here</h5>
+              <p class="text-muted small mb-0">Supports Excel (.xlsx) or CSV formats</p>
+            </div>
+          </div>
+
+          <div id="uploadProgress" class="progress d-none mb-3" style="height: 6px; background: rgba(255,255,255,0.1)">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%; background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet))"></div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div id="uploadSummary" class="p-4 rounded d-none h-100" style="background: rgba(17, 24, 39, 0.5); border: 1px solid var(--card-border);">
+                <h6 class="text-white mb-3 fw-bold">Upload Summary</h6>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small text-muted">
+                  <li class="d-flex justify-content-between">Rows Received: <span id="summaryRows" class="text-white fw-semibold">0</span></li>
+                  <li class="d-flex justify-content-between">Returning Students: <span id="summaryReturning" class="text-white fw-semibold">0</span></li>
+                  <li class="d-flex justify-content-between">New Students: <span id="summaryNew" class="text-white fw-semibold">0</span></li>
+                  <li class="d-flex justify-content-between">Duplicates Flagged: <span id="summaryDuplicates" class="text-white fw-semibold">0</span></li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div id="uploadActionCard" class="p-4 rounded d-none h-100" style="background: rgba(17, 24, 39, 0.5); border: 1px solid var(--card-border);">
+                <h6 class="text-white mb-3 fw-bold">Execution Console</h6>
+                <p class="text-muted small mb-3">The dataset is uploaded. Fit the K-Means clustering algorithm to compute student performance levels.</p>
+                <div id="runSuccessAlert" class="alert alert-success py-2 px-3 small d-none mb-3" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: var(--accent-emerald);">
+                  Model training and classification completed successfully!
+                </div>
+                <div class="d-flex flex-column gap-2">
+                  <button id="btnRunClustering" class="btn btn-gradient-primary py-2 d-flex align-items-center justify-content-center gap-2">
+                    <span id="runSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Run Model Training
+                  </button>
+                  <a id="btnDownloadReport" href="#" class="btn btn-outline-light py-2 disabled">
+                    Download CSV Output
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Student Search -->
+      <section id="section-lookup" class="dashboard-section">
+        <div class="glass-card p-4">
+          <h5 class="mb-3 text-white fw-bold">Student Lookup System</h5>
+          <p class="text-muted small">Search students by full name or matriculation number to inspect individual CGPAs, attendance metrics, assessment scores, and counseling guidance.</p>
+          
+          <div class="input-group mb-4" style="max-width: 500px;">
+            <input type="text" id="studentSearchQuery" class="form-control" placeholder="Search matric number or name..." aria-label="Search student">
+            <button class="btn btn-gradient-primary px-4" type="button" id="btnSearchStudent">Search</button>
+          </div>
+
+          <div id="studentProfileResult" class="d-none p-4 rounded" style="background: rgba(17, 24, 39, 0.5); border: 1px solid var(--card-border); max-width: 600px;">
+            <div class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-3" style="border-color: var(--card-border) !important;">
+              <div>
+                <h5 class="text-white mb-1 fw-bold" id="studentProfileName">Full Name</h5>
+                <span class="text-muted small" id="studentProfileMatric">Matric</span>
+              </div>
+              <span id="studentProfileBadge" class="badge py-2 px-3 fs-6">Badge</span>
+            </div>
+            
+            <div class="row g-3 mb-3 text-center">
+              <div class="col-4">
+                <div class="py-2 rounded" style="background: rgba(255,255,255,0.03)">
+                  <div class="text-white fw-bold fs-5" id="studentProfileCGPA">-</div>
+                  <span class="small text-muted">CGPA</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="py-2 rounded" style="background: rgba(255,255,255,0.03)">
+                  <div class="text-white fw-bold fs-5" id="studentProfileAtt">-</div>
+                  <span class="small text-muted">Attendance</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="py-2 rounded" style="background: rgba(255,255,255,0.03)">
+                  <div class="text-white fw-bold fs-5" id="studentProfileAss">-</div>
+                  <span class="small text-muted">Assessment</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-3 rounded" style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.1);">
+              <h6 class="text-white fw-bold mb-2">Intervention Directive:</h6>
+              <p class="mb-0 text-muted small" id="studentProfileAction">None</p>
+            </div>
+          </div>
+          
+          <div id="studentSearchError" class="alert alert-danger py-2 px-3 small mt-3 d-none" style="max-width: 600px;">
+            Student not found.
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Data Explorer Table -->
+      <section id="section-explorer" class="dashboard-section">
+        <div class="glass-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h5 class="mb-1 text-white fw-bold">Student Database Explorer</h5>
+              <p class="text-muted small mb-0">Browse student records and computed clustering levels.</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <input type="text" id="tableSearchInput" class="form-control form-control-sm" placeholder="Search rows..." style="width: 200px;">
+              <select id="tableClusterFilter" class="form-select form-select-sm" style="width: auto;">
+                <option value="">All Tiers</option>
+                <option value="High Performing">High Performing</option>
+                <option value="Average Performing">Average Performing</option>
+                <option value="At Risk">At Risk</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Matric No</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Level</th>
+                  <th class="text-center">CGPA</th>
+                  <th class="text-center">Attendance</th>
+                  <th class="text-center">Assessment</th>
+                  <th>Cluster Level</th>
+                  <th>Intervention Recommendation</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody">
+                <!-- Javascript populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Pagination -->
+          <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+            <div id="tableInfoText" class="small text-muted">Showing 0 to 0 of 0 entries</div>
+            <nav>
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" id="btnPagePrev"><button class="page-link" style="background: transparent; border-color: var(--card-border); color: var(--text-primary);">Previous</button></li>
+                <li class="page-item disabled"><span class="page-link" id="pageNumberText" style="background: rgba(255,255,255,0.05); border-color: var(--card-border); color: var(--text-primary)">Page 1</span></li>
+                <li class="page-item" id="btnPageNext"><button class="page-link" style="background: transparent; border-color: var(--card-border); color: var(--text-primary)">Next</button></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Model Diagnostics -->
+      <section id="section-diagnostics" class="dashboard-section">
+        <div class="glass-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h5 class="mb-1 text-white fw-bold">Model Quality & System Health</h5>
+              <p class="text-muted small mb-0">Evaluate mathematical integrity, model stability, and computing performance benchmarks.</p>
+            </div>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Tab control">
+              <button type="button" class="btn btn-outline-secondary active" id="btnPaneHealth" onclick="switchPane('health')">Model Health</button>
+              <button type="button" class="btn btn-outline-secondary" id="btnPaneBenchmark" onclick="switchPane('benchmark')">System Benchmark</button>
+            </div>
+          </div>
+
+          <!-- PANE A: Model Health -->
+          <div id="pane-health" class="pane-content">
+            <!-- Model Type Selection -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 border-bottom pb-3" style="border-color: var(--card-border) !important;">
+              <span class="text-white small fw-semibold">Model Architecture & Training Quality</span>
+              <select id="diagStudentTypeSelect" class="form-select form-select-sm py-1 px-3" style="width: auto;">
+                <option value="Returning">Returning Students Model</option>
+                <option value="New">New Students Model</option>
+              </select>
+            </div>
+
+            <!-- Health Card Deck -->
+            <div class="row g-3 mb-4">
+              <div class="col-sm-6 col-md-3">
+                <div class="glass-card p-3" style="border-left: 4px solid var(--accent-indigo) !important;">
+                  <div class="small text-muted mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Model Fit Quality</div>
+                  <h4 id="diagFitQuality" class="text-white fw-bold mb-1">-</h4>
+                  <div id="diagFitQualitySub" class="small text-muted">Silhouette: -</div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="glass-card p-3" style="border-left: 4px solid var(--accent-emerald) !important;">
+                  <div class="small text-muted mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Generalizability</div>
+                  <h4 id="diagGeneralization" class="text-white fw-bold mb-1">-</h4>
+                  <div id="diagGeneralizationSub" class="small text-muted">Gap: -</div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="glass-card p-3" style="border-left: 4px solid var(--accent-amber) !important;">
+                  <div class="small text-muted mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Outlier Density</div>
+                  <h4 id="diagOutliers" class="text-white fw-bold mb-1">-</h4>
+                  <div id="diagOutliersSub" class="small text-muted">Flagged: -</div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="glass-card p-3" style="border-left: 4px solid var(--accent-rose) !important;">
+                  <div class="small text-muted mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Dataset Scale</div>
+                  <h4 id="diagScale" class="text-white fw-bold mb-1">-</h4>
+                  <div id="diagScaleSub" class="small text-muted">Cleaned rows</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mathematical Sweeps (Charts) -->
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="p-3 rounded" style="background: rgba(17, 24, 39, 0.4); border: 1px solid var(--card-border);">
+                  <h6 class="text-white small mb-2 fw-semibold text-center">Elbow Curve (WCSS / Cohesion)</h6>
+                  <div style="height: 250px; position: relative;"><canvas id="elbowChart"></canvas></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3 rounded" style="background: rgba(17, 24, 39, 0.4); border: 1px solid var(--card-border);">
+                  <h6 class="text-white small mb-2 fw-semibold text-center">Silhouette Score Sweep (Separation)</h6>
+                  <div style="height: 250px; position: relative;"><canvas id="silhouetteSweepChart"></canvas></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANE B: Performance Benchmarking -->
+          <div id="pane-benchmark" class="pane-content d-none">
+            <div class="border-bottom pb-3 mb-4" style="border-color: var(--card-border) !important;">
+              <span class="text-white small fw-semibold">Computational Performance & Benchmarking Console</span>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
+              <!-- Console Card -->
+              <div class="col-lg-5">
+                <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    <h6 class="text-white fw-bold mb-3">System Performance Audit</h6>
+                    <p class="text-muted small mb-4">
+                      Trigger an on-demand latency and scaling benchmark for the active dataset to profile parsing, clustering, and database persistence sub-modules.
+                    </p>
+                    
+                    <div id="benchmarkStats" class="d-none d-flex flex-column gap-3 mb-4">
+                      <div class="d-flex justify-content-between border-bottom pb-2" style="border-color: rgba(255,255,255,0.05) !important;">
+                        <span class="text-muted small">Spreadsheet Ingestion Rate:</span>
+                        <span class="text-white fw-semibold small" id="benchIngestTime">-</span>
+                      </div>
+                      <div class="d-flex justify-content-between border-bottom pb-2" style="border-color: rgba(255,255,255,0.05) !important;">
+                        <span class="text-muted small">K-Means Fitting Speed:</span>
+                        <span class="text-white fw-semibold small" id="benchFitTime">-</span>
+                      </div>
+                      <div class="d-flex justify-content-between border-bottom pb-2" style="border-color: rgba(255,255,255,0.05) !important;">
+                        <span class="text-muted small">Peak Memory Footprint:</span>
+                        <span class="text-emerald fw-semibold small" id="benchMemory">-</span>
+                      </div>
+                      <div class="d-flex justify-content-between border-bottom pb-2" style="border-color: rgba(255,255,255,0.05) !important;">
+                        <span class="text-muted small">DB Insertion Overhead:</span>
+                        <span class="text-amber fw-semibold small" id="benchDBPersistence">-</span>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                        <span class="text-muted small">Database Bulk Write Boost:</span>
+                        <span class="text-white fw-bold small" id="benchDBSpeedup">-</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <button type="button" class="btn btn-gradient-primary w-100 py-2 d-flex justify-content-center align-items-center gap-2" id="btnRunBenchmark">
+                      <span id="benchSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                      <span id="btnBenchText">Run System Performance Check</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Performance Scaling Chart -->
+              <div class="col-lg-7">
+                <div class="p-3 rounded h-100" style="background: rgba(17, 24, 39, 0.4); border: 1px solid var(--card-border);">
+                  <h6 class="text-white small mb-2 fw-semibold text-center">Clustering Performance Scaling (Time vs Size)</h6>
+                  <div style="height: 300px; position: relative;">
+                    <canvas id="scalingChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Analysis History -->
+      <section id="section-history" class="dashboard-section">
+        <div class="glass-card p-4">
+          <h5 class="mb-3 text-white fw-bold">Analysis Run Log</h5>
+          <p class="text-muted small">A chronological log of all historical clustering runs executed on the active dataset.</p>
+          
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Analysis Timestamp</th>
+                  <th class="text-center">WCSS Score</th>
+                  <th class="text-center">Silhouette Coefficient</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <!-- Javascript populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: User Management (Admin Only) -->
+      {% if current_user.role == 'Admin' %}
+      <section id="section-users" class="dashboard-section">
+        <div class="glass-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h5 class="mb-1 text-white fw-bold">User Management Console</h5>
+              <p class="text-muted small mb-0">Create, view, update, and revoke access for lecturers, exam officers, and other system administrators.</p>
+            </div>
+            <button class="btn btn-gradient-primary btn-sm px-4" data-bs-toggle="modal" data-bs-target="#addUserModal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add User Account
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>System Role</th>
+                  <th>Created Timestamp</th>
+                  <th class="text-center" style="width: 200px;">Action Control</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <!-- Javascript populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODAL: Add User -->
+      <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content glass-card" style="background: var(--bg-secondary); border: 1px solid var(--card-border);">
+            <div class="modal-header border-bottom-0">
+              <h5 class="modal-title text-white fw-bold" id="addUserModalLabel">Create User Account</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+              <form id="addUserForm">
+                <div class="mb-3">
+                  <label for="addUsername" class="form-label small text-muted text-uppercase fw-semibold">Username</label>
+                  <input type="text" class="form-control" id="addUsername" required autocomplete="off">
+                </div>
+                <div class="mb-3">
+                  <label for="addPassword" class="form-label small text-muted text-uppercase fw-semibold">Initial Password</label>
+                  <input type="password" class="form-control" id="addPassword" required autocomplete="new-password">
+                </div>
+                <div class="mb-3">
+                  <label for="addRole" class="form-label small text-muted text-uppercase fw-semibold">Access Privilege Level</label>
+                  <select class="form-select" id="addRole" required>
+                    <option value="Lecturer">Lecturer</option>
+                    <option value="Exam Officer">Exam Officer</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </div>
+                <div class="alert alert-danger py-2 px-3 small d-none mb-3" id="addUserError"></div>
+                <button type="submit" class="btn btn-gradient-primary w-100 py-2">Create Account</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: Edit User -->
+      <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content glass-card" style="background: var(--bg-secondary); border: 1px solid var(--card-border);">
+            <div class="modal-header border-bottom-0">
+              <h5 class="modal-title text-white fw-bold" id="editUserModalLabel">Modify User Account</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+              <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="mb-3">
+                  <label class="form-label small text-muted text-uppercase fw-semibold">Username</label>
+                  <input type="text" class="form-control-plaintext text-white fw-semibold px-2 py-1 rounded" id="editUsername" readonly style="background: rgba(255,255,255,0.03);">
+                </div>
+                <div class="mb-3">
+                  <label for="editPassword" class="form-label small text-muted text-uppercase fw-semibold">Reset Password (Optional)</label>
+                  <input type="password" class="form-control" id="editPassword" placeholder="Leave blank to keep current password" autocomplete="new-password">
+                </div>
+                <div class="mb-3">
+                  <label for="editRole" class="form-label small text-muted text-uppercase fw-semibold">Access Privilege Level</label>
+                  <select class="form-select" id="editRole" required>
+                    <option value="Lecturer">Lecturer</option>
+                    <option value="Exam Officer">Exam Officer</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </div>
+                <div class="alert alert-danger py-2 px-3 small d-none mb-3" id="editUserError"></div>
+                <button type="submit" class="btn btn-gradient-primary w-100 py-2">Save Account Modifications</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let datasetsList = [];
+  let activeDatasetId = null;
+  let activeData = null;
+  let diagnosticsData = null;
+
+  // Quality & Benchmark singletons
+  let silhouetteSweepChart = null;
+  let scalingChart = null;
+  let qualityData = null;
+
+  // Pagination and Explorer state
+  let currentPage = 1;
+  const pageSize = 15;
+  let filteredPoints = [];
+
+  // Chart singletons
+  let scatterChart = null;
+  let barChart = null;
+  let radarChart = null;
+  let elbowChart = null;
+
+  const colors = {
+    'High Performing': '#10b981', // Emerald
+    'Average Performing': '#f59e0b', // Amber
+    'At Risk': '#f43f5e' // Rose
+  };
+
+  const colorsBg = {
+    'High Performing': 'rgba(16, 185, 129, 0.5)',
+    'Average Performing': 'rgba(245, 158, 11, 0.5)',
+    'At Risk': 'rgba(244, 63, 94, 0.5)'
+  };
+
+  // Sidebar Tab Switching Logic
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+  const sections = document.querySelectorAll('.dashboard-section');
+
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      const targetId = link.getAttribute('data-target');
+      sections.forEach(sec => {
+        if (sec.id === targetId) sec.classList.add('active');
+        else sec.classList.remove('active');
+      });
+
+      if (targetId === 'section-users') {
+        fetchUsersList();
+      }
+    });
+  });
+
+  // Global Dataset Dropdown List
+  const globalDatasetSelect = document.getElementById('globalDatasetSelect');
+  
+  function fetchDatasetsList(autoSelectId = null) {
+    fetch('/api/datasets')
+    .then(res => res.json())
+    .then(data => {
+      datasetsList = data.datasets;
+      
+      // Populate select
+      globalDatasetSelect.innerHTML = '';
+      if (datasetsList.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = "";
+        opt.textContent = "No datasets found";
+        opt.disabled = true;
+        opt.selected = true;
+        globalDatasetSelect.appendChild(opt);
+        
+        // Show empty placeholder
+        document.getElementById('dashboardEmptyState').classList.remove('d-none');
+        document.getElementById('dashboardContent').classList.add('d-none');
+        document.getElementById('metricsRow').classList.add('d-none');
+        return;
+      }
+
+      datasetsList.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.dataset_id;
+        opt.textContent = `${d.filename} (${d.record_count} rows)`;
+        globalDatasetSelect.appendChild(opt);
+      });
+
+      document.getElementById('dashboardEmptyState').classList.add('d-none');
+      document.getElementById('dashboardContent').classList.remove('d-none');
+
+      // Select logic
+      if (autoSelectId) {
+        globalDatasetSelect.value = autoSelectId;
+      } else if (datasetsList.length > 0) {
+        globalDatasetSelect.value = datasetsList[0].dataset_id;
+      }
+      
+      activeDatasetId = globalDatasetSelect.value;
+      loadDatasetData();
+    })
+    .catch(err => alert("Error fetching dataset list: " + err.message));
+  }
+
+  globalDatasetSelect.addEventListener('change', () => {
+    activeDatasetId = globalDatasetSelect.value;
+    loadDatasetData();
+  });
+
+  // Fetch metrics, history, and points
+  function loadDatasetData() {
+    if (!activeDatasetId) return;
+
+    // Reset Success banners
+    document.getElementById('runSuccessAlert').classList.add('d-none');
+
+    // 1. Fetch points for dashboard
+    fetch(`/api/dashboard/${activeDatasetId}`)
+    .then(res => res.json())
+    .then(data => {
+      activeData = data;
+      
+      // If student data doesn't exist, show warning/prompt to run clustering
+      if (activeData.points.length === 0) {
+        alert("This dataset has not been analyzed yet. Head to the Upload Center in the sidebar and click 'Run Model Training'.");
+        
+        // Switch to upload tab automatically
+        document.querySelector('[data-target="section-upload"]').click();
+        
+        // Populate current filename in execution console
+        const selectedObj = datasetsList.find(d => d.dataset_id == activeDatasetId);
+        document.getElementById('activeFilename').textContent = selectedObj ? selectedObj.filename : 'Unknown';
+        document.getElementById('datasetControlCard').classList.remove('d-none');
+        document.getElementById('uploadSummary').classList.add('d-none');
+        document.getElementById('uploadActionCard').classList.remove('d-none');
+        
+        // Disable download button
+        const downloadBtn = document.getElementById('btnDownloadReport');
+        downloadBtn.classList.add('disabled');
+        downloadBtn.href = '#';
+
+        document.getElementById('metricsRow').classList.add('d-none');
+        return;
+      }
+
+      document.getElementById('metricsRow').classList.remove('d-none');
+
+      // Populate metrics panel
+      populateOverviewMetrics(activeData.points);
+
+      // Populate student table
+      filteredPoints = [...activeData.points];
+      currentPage = 1;
+      renderTableExplorer();
+
+      // Render charts
+      renderAllCharts();
+    })
+    .catch(err => console.error(err));
+
+    // 2. Fetch history
+    fetch(`/api/datasets/${activeDatasetId}/history`)
+    .then(res => res.json())
+    .then(data => {
+      populateHistoryTable(data.runs);
+    })
+    .catch(err => console.error(err));
+
+    // 3. Fetch model quality and diagnostics
+    fetch(`/api/clustering/datasets/${activeDatasetId}/quality`)
+    .then(res => res.json())
+    .then(data => {
+      qualityData = data.results;
+      updateDiagnosticsUI();
+    })
+    .catch(err => console.error(err));
+  }
+
+  // Populate overview metrics cards at the top
+  function populateOverviewMetrics(points) {
+    const total = points.length;
+    document.getElementById('statTotalStudents').textContent = total;
+
+    let totalAttendance = 0;
+    let totalAssessment = 0;
+    let atRiskCount = 0;
+
+    points.forEach(p => {
+      totalAttendance += p.attendance_rate;
+      totalAssessment += p.assessment_score;
+      if (p.cluster_label === 'At Risk') atRiskCount++;
+    });
+
+    const avgAttendance = total > 0 ? (totalAttendance / total) : 0;
+    const avgAssessment = total > 0 ? (totalAssessment / total) : 0;
+    const atRiskRate = total > 0 ? ((atRiskCount / total) * 100) : 0;
+
+    document.getElementById('statAvgAttendance').textContent = avgAttendance.toFixed(0) + '%';
+    document.getElementById('statAvgAssessment').textContent = avgAssessment.toFixed(0) + '/100';
+    document.getElementById('statAtRiskRate').textContent = atRiskRate.toFixed(0) + '%';
+  }
+
+  // Populate Analysis history run log
+  function populateHistoryTable(runs) {
+    const tbody = document.getElementById('historyTableBody');
+    tbody.innerHTML = '';
+    
+    if (runs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3 small">No historical runs recorded.</td></tr>';
+      return;
+    }
+
+    runs.forEach(r => {
+      const tr = document.createElement('tr');
+      
+      const dateCell = document.createElement('td');
+      dateCell.textContent = new Date(r.analysis_date).toLocaleString();
+      tr.appendChild(dateCell);
+
+      const wcssCell = document.createElement('td');
+      wcssCell.className = "text-center text-white fw-semibold";
+      wcssCell.textContent = r.wcss !== null ? r.wcss.toFixed(1) : 'N/A';
+      tr.appendChild(wcssCell);
+
+      const silCell = document.createElement('td');
+      silCell.className = "text-center text-white fw-semibold";
+      silCell.textContent = r.silhouette_score !== null ? r.silhouette_score.toFixed(4) : 'N/A';
+      tr.appendChild(silCell);
+
+      const statusCell = document.createElement('td');
+      statusCell.innerHTML = '<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Completed</span>';
+      tr.appendChild(statusCell);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Data Explorer Table Filter and Search
+  const tableSearchInput = document.getElementById('tableSearchInput');
+  const tableClusterFilter = document.getElementById('tableClusterFilter');
+
+  function filterTableData() {
+    if (!activeData) return;
+    
+    const query = tableSearchInput.value.trim().toLowerCase();
+    const filter = tableClusterFilter.value;
+
+    filteredPoints = activeData.points.filter(p => {
+      const matchQuery = p.matric_number.toLowerCase().includes(query) || p.full_name.toLowerCase().includes(query);
+      const matchFilter = !filter || p.cluster_label === filter;
+      return matchQuery && matchFilter;
+    });
+
+    currentPage = 1;
+    renderTableExplorer();
+  }
+
+  tableSearchInput.addEventListener('input', filterTableData);
+  tableClusterFilter.addEventListener('change', filterTableData);
+
+  // Render explorer data table with pagination
+  function renderTableExplorer() {
+    const tbody = document.getElementById('studentTableBody');
+    tbody.innerHTML = '';
+
+    const total = filteredPoints.length;
+    
+    if (total === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-3 small">No matching students found.</td></tr>';
+      document.getElementById('tableInfoText').textContent = "Showing 0 to 0 of 0 entries";
+      return;
+    }
+
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = Math.min(startIdx + pageSize, total);
+    
+    const pageSlice = filteredPoints.slice(startIdx, endIdx);
+
+    pageSlice.forEach(p => {
+      const tr = document.createElement('tr');
+
+      const matricCell = document.createElement('td');
+      matricCell.textContent = p.matric_number;
+      tr.appendChild(matricCell);
+
+      const nameCell = document.createElement('td');
+      nameCell.className = "text-white fw-medium";
+      nameCell.textContent = p.full_name;
+      tr.appendChild(nameCell);
+
+      const typeCell = document.createElement('td');
+      typeCell.className = "text-muted small";
+      typeCell.textContent = p.student_type;
+      tr.appendChild(typeCell);
+
+      const levelCell = document.createElement('td');
+      levelCell.className = "text-center";
+      levelCell.textContent = p.level;
+      tr.appendChild(levelCell);
+
+      const cgpaCell = document.createElement('td');
+      cgpaCell.className = "text-center text-white";
+      cgpaCell.textContent = p.cgpa !== null ? p.cgpa.toFixed(2) : '-';
+      tr.appendChild(cgpaCell);
+
+      const attCell = document.createElement('td');
+      attCell.className = "text-center";
+      attCell.textContent = p.attendance_rate.toFixed(0) + '%';
+      tr.appendChild(attCell);
+
+      const assCell = document.createElement('td');
+      assCell.className = "text-center";
+      assCell.textContent = p.assessment_score.toFixed(0);
+      tr.appendChild(assCell);
+
+      const clusterCell = document.createElement('td');
+      const dot = `<span class="badge-dot" style="background: ${colors[p.cluster_label]}"></span>`;
+      clusterCell.innerHTML = `<span class="d-flex align-items-center">${dot}${p.cluster_label}</span>`;
+      tr.appendChild(clusterCell);
+
+      const actionCell = document.createElement('td');
+      actionCell.className = "text-muted small text-truncate";
+      actionCell.style.maxWidth = "280px";
+      actionCell.textContent = p.action_flag;
+      actionCell.title = p.action_flag;
+      tr.appendChild(actionCell);
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('tableInfoText').textContent = `Showing ${startIdx + 1} to ${endIdx} of ${total} entries`;
+    document.getElementById('pageNumberText').textContent = `Page ${currentPage} of ${Math.ceil(total / pageSize)}`;
+
+    // Handle button disabled states
+    document.getElementById('btnPagePrev').classList.toggle('disabled', currentPage === 1);
+    document.getElementById('btnPageNext').classList.toggle('disabled', endIdx >= total);
+  }
+
+  document.getElementById('btnPagePrev').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderTableExplorer();
+    }
+  });
+
+  document.getElementById('btnPageNext').addEventListener('click', () => {
+    const total = filteredPoints.length;
+    if (currentPage * pageSize < total) {
+      currentPage++;
+      renderTableExplorer();
+    }
+  });
+
+  // Drag and drop events for file uploading
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const uploadProgress = document.getElementById('uploadProgress');
+  const uploadSummary = document.getElementById('uploadSummary');
+  const uploadActionCard = document.getElementById('uploadActionCard');
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = 'var(--accent-indigo)';
+      dropzone.style.backgroundColor = 'rgba(99, 102, 241, 0.08)';
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = 'var(--card-border)';
+      dropzone.style.backgroundColor = 'rgba(17, 24, 39, 0.3)';
+    }, false);
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length) handleFileUpload(files[0]);
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (fileInput.files.length) handleFileUpload(fileInput.files[0]);
+  });
+
+  function handleFileUpload(file) {
+    uploadProgress.classList.remove('d-none');
+    uploadSummary.classList.add('d-none');
+    uploadActionCard.classList.add('d-none');
+    
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/api/datasets', {
+      method: 'POST',
+      body: formData
+    })
+    .then(async response => {
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Upload failed');
+      return result;
+    })
+    .then(data => {
+      uploadProgress.classList.add('d-none');
+      activeDatasetId = data.dataset_id;
+
+      // Populate summary
+      document.getElementById('summaryRows').textContent = data.summary.rows_received;
+      document.getElementById('summaryReturning').textContent = data.summary.returning_students;
+      document.getElementById('summaryNew').textContent = data.summary.new_students;
+      document.getElementById('summaryDuplicates').textContent = data.summary.duplicate_matric_numbers;
+      uploadSummary.classList.remove('d-none');
+
+      // Update control cards
+      document.getElementById('activeFilename').textContent = data.filename;
+      uploadActionCard.classList.remove('d-none');
+      
+      // Reset State
+      document.getElementById('runSuccessAlert').classList.add('d-none');
+      
+      // Refresh list to include newly uploaded file
+      fetchDatasetsList(activeDatasetId);
+    })
+    .catch(err => {
+      uploadProgress.classList.add('d-none');
+      alert('Error: ' + err.message);
+    });
+  }
+
+  // Trigger clustering
+  const btnRunClustering = document.getElementById('btnRunClustering');
+  const runSpinner = document.getElementById('runSpinner');
+  
+  btnRunClustering.addEventListener('click', () => {
+    if (!activeDatasetId) return;
+
+    btnRunClustering.disabled = true;
+    runSpinner.classList.remove('d-none');
+
+    fetch(`/api/clustering/datasets/${activeDatasetId}/run`, {
+      method: 'POST'
+    })
+    .then(async response => {
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Clustering failed');
+      return result;
+    })
+    .then(data => {
+      runSpinner.classList.add('d-none');
+      btnRunClustering.disabled = false;
+      document.getElementById('runSuccessAlert').classList.remove('d-none');
+      
+      // Store diagnostics
+      diagnosticsData = data.results;
+
+      // Enable download link
+      const downloadBtn = document.getElementById('btnDownloadReport');
+      downloadBtn.classList.remove('disabled');
+      downloadBtn.href = `/api/reports/datasets/${activeDatasetId}/download`;
+
+      // Reload dataset contents
+      loadDatasetData();
+      
+      // Switch back to overview tab
+      document.querySelector('[data-target="section-overview"]').click();
+    })
+    .catch(err => {
+      runSpinner.classList.add('d-none');
+      btnRunClustering.disabled = false;
+      alert('Error: ' + err.message);
+    });
+  });
+
+  // Handle student profile lookup
+  const btnSearchStudent = document.getElementById('btnSearchStudent');
+  const studentSearchQuery = document.getElementById('studentSearchQuery');
+  const studentProfileResult = document.getElementById('studentProfileResult');
+  const studentSearchError = document.getElementById('studentSearchError');
+
+  btnSearchStudent.addEventListener('click', () => {
+    const q = studentSearchQuery.value.trim();
+    if (!q) return;
+
+    studentProfileResult.classList.add('d-none');
+    studentSearchError.classList.add('d-none');
+
+    fetch(`/api/students/search?q=${encodeURIComponent(q)}`)
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Search failed');
+      return data;
+    })
+    .then(student => {
+      document.getElementById('studentProfileName').textContent = student.full_name;
+      document.getElementById('studentProfileMatric').textContent = student.matric_number + ' • ' + student.student_type;
+      
+      const badge = document.getElementById('studentProfileBadge');
+      badge.textContent = student.cluster_label || 'Unassigned';
+      
+      // Colors
+      badge.className = 'badge py-2 px-3 fs-6';
+      if (student.cluster_label === 'High Performing') badge.style.backgroundColor = colors['High Performing'];
+      else if (student.cluster_label === 'Average Performing') badge.style.backgroundColor = colors['Average Performing'];
+      else if (student.cluster_label === 'At Risk') badge.style.backgroundColor = colors['At Risk'];
+      else badge.style.backgroundColor = '#6b7280';
+
+      document.getElementById('studentProfileCGPA').textContent = student.cgpa !== null ? student.cgpa.toFixed(2) : 'N/A';
+      document.getElementById('studentProfileAtt').textContent = student.attendance_rate.toFixed(0) + '%';
+      document.getElementById('studentProfileAss').textContent = student.assessment_score.toFixed(0);
+      document.getElementById('studentProfileAction').textContent = student.action_flag || 'No analysis run yet.';
+
+      studentProfileResult.classList.remove('d-none');
+    })
+    .catch(err => {
+      studentSearchError.textContent = err.message;
+      studentSearchError.classList.remove('d-none');
+    });
+  });
+
+  // Watch view select changes
+  const studentTypeViewSelect = document.getElementById('studentTypeViewSelect');
+  studentTypeViewSelect.addEventListener('change', () => {
+    if (activeData) renderAllCharts();
+  });
+
+  // Helper: compute centroids in javascript from data points
+  function computeCentroids(points, features) {
+    const centroids = {
+      'High Performing': {},
+      'Average Performing': {},
+      'At Risk': {}
+    };
+
+    const counts = {
+      'High Performing': 0,
+      'Average Performing': 0,
+      'At Risk': 0
+    };
+
+    // Initialize
+    for (let c of Object.keys(centroids)) {
+      for (let f of features) centroids[c][f] = 0;
+    }
+
+    // Accumulate
+    for (let p of points) {
+      const c = p.cluster_label;
+      if (centroids[c] !== undefined) {
+        counts[c]++;
+        for (let f of features) {
+          centroids[c][f] += p[f] || 0;
+        }
+      }
+    }
+
+    // Average
+    for (let c of Object.keys(centroids)) {
+      for (let f of features) {
+        centroids[c][f] = counts[c] > 0 ? (centroids[c][f] / counts[c]) : 0;
+      }
+    }
+
+    return centroids;
+  }
+
+  function renderAllCharts() {
+    const selectedType = studentTypeViewSelect.value; // "Returning" or "New"
+    const points = activeData.points.filter(p => p.student_type === selectedType);
+
+    // Destructure charts if they exist
+    if (scatterChart) scatterChart.destroy();
+    if (barChart) barChart.destroy();
+    if (radarChart) radarChart.destroy();
+    if (elbowChart) elbowChart.destroy();
+
+    // 1. Scatter Chart
+    const isReturning = selectedType === 'Returning';
+    const scatterDatasets = Object.keys(colors).map(label => {
+      const subset = points.filter(p => p.cluster_label === label);
+      return {
+        label: label,
+        data: subset.map(p => ({
+          x: p.assessment_score,
+          y: isReturning ? p.cgpa : p.attendance_rate
+        })),
+        backgroundColor: colors[label],
+        borderColor: colors[label],
+        pointRadius: 5
+      };
+    });
+
+    const scatterCtx = document.getElementById('scatterChart').getContext('2d');
+    scatterChart = new Chart(scatterCtx, {
+      type: 'scatter',
+      data: { datasets: scatterDatasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#9ca3af', font: { family: 'Inter' } } }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Assessment Score', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { color: 'rgba(255,255,255,0.05)' }
+          },
+          y: {
+            title: { display: true, text: isReturning ? 'CGPA' : 'Attendance Rate (%)', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { color: 'rgba(255,255,255,0.05)' }
+          }
+        }
+      }
+    });
+
+    // 2. Bar Chart (Counts per cluster)
+    const counts = { 'High Performing': 0, 'Average Performing': 0, 'At Risk': 0 };
+    points.forEach(p => {
+      if (counts[p.cluster_label] !== undefined) counts[p.cluster_label]++;
+    });
+
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(counts),
+        datasets: [{
+          data: Object.values(counts),
+          backgroundColor: Object.keys(counts).map(k => colorsBg[k]),
+          borderColor: Object.keys(counts).map(k => colors[k]),
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { ticks: { color: '#9ca3af' }, grid: { display: false } },
+          y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+
+    // 3. Radar Chart (Profile Centroids)
+    const radarFeatures = isReturning ? ['cgpa', 'attendance_rate', 'assessment_score'] : ['attendance_rate', 'assessment_score'];
+    const centroids = computeCentroids(points, radarFeatures);
+
+    const radarDatasets = Object.keys(colors).map(label => {
+      const centObj = centroids[label];
+      const dataArr = isReturning ? [
+        (centObj.cgpa / 5) * 100,
+        centObj.attendance_rate,
+        centObj.assessment_score
+      ] : [
+        centObj.attendance_rate,
+        centObj.assessment_score
+      ];
+
+      return {
+        label: label,
+        data: dataArr,
+        backgroundColor: colorsBg[label],
+        borderColor: colors[label],
+        borderWidth: 2,
+        pointBackgroundColor: colors[label]
+      };
+    });
+
+    const radarCtx = document.getElementById('radarChart').getContext('2d');
+    radarChart = new Chart(radarCtx, {
+      type: 'radar',
+      data: {
+        labels: isReturning ? ['CGPA (Scaled)', 'Attendance Rate', 'Assessment Score'] : ['Attendance Rate', 'Assessment Score'],
+        datasets: radarDatasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#9ca3af' } }
+        },
+        scales: {
+          r: {
+            angleLines: { color: 'rgba(255,255,255,0.08)' },
+            grid: { color: 'rgba(255,255,255,0.08)' },
+            pointLabels: { color: '#9ca3af' },
+            ticks: { display: false },
+            suggestedMin: 0,
+            suggestedMax: 100
+          }
+        }
+      }
+    });
+
+  }
+
+  // Pane Switching Logic
+  function switchPane(pane) {
+    document.getElementById('pane-health').classList.toggle('d-none', pane !== 'health');
+    document.getElementById('pane-benchmark').classList.toggle('d-none', pane !== 'benchmark');
+    
+    document.getElementById('btnPaneHealth').classList.toggle('active', pane === 'health');
+    document.getElementById('btnPaneBenchmark').classList.toggle('active', pane === 'benchmark');
+  }
+
+  // Model Diagnostics dropdown trigger
+  const diagStudentTypeSelect = document.getElementById('diagStudentTypeSelect');
+  diagStudentTypeSelect.addEventListener('change', updateDiagnosticsUI);
+
+  // Update Diagnostics UI (health cards + charts)
+  function updateDiagnosticsUI() {
+    if (!qualityData) return;
+    
+    const selectedType = diagStudentTypeSelect.value;
+    const info = qualityData[selectedType];
+    
+    if (!info || info.error) {
+      document.getElementById('diagFitQuality').textContent = "N/A";
+      document.getElementById('diagFitQualitySub').textContent = info ? info.error : "No data";
+      document.getElementById('diagGeneralization').textContent = "N/A";
+      document.getElementById('diagGeneralizationSub').textContent = "";
+      document.getElementById('diagOutliers').textContent = "N/A";
+      document.getElementById('diagOutliersSub').textContent = "";
+      document.getElementById('diagScale').textContent = "N/A";
+      document.getElementById('diagScaleSub').textContent = "";
+      return;
+    }
+    
+    // Fit Quality Badge
+    const sil = info.silhouette_score;
+    let fitRating = "Weak Structure";
+    let fitColor = "var(--accent-rose)";
+    if (sil > 0.5) {
+      fitRating = "Strong";
+      fitColor = "var(--accent-emerald)";
+    } else if (sil > 0.25) {
+      fitRating = "Moderate";
+      fitColor = "var(--accent-amber)";
+    }
+    const fitEl = document.getElementById('diagFitQuality');
+    fitEl.textContent = fitRating;
+    fitEl.style.color = fitColor;
+    document.getElementById('diagFitQualitySub').textContent = `Silhouette: ${sil.toFixed(3)}`;
+    
+    // Generalizability Card
+    const gap = info.silhouette_gap;
+    let genRating = "Overfit Risk";
+    let genColor = "var(--accent-rose)";
+    if (info.possible_overfit === false) {
+      if (gap < 0.10) {
+        genRating = "Excellent";
+        genColor = "var(--accent-emerald)";
+      } else {
+        genRating = "Healthy";
+        genColor = "var(--accent-indigo)";
+      }
+    }
+    const genEl = document.getElementById('diagGeneralization');
+    genEl.textContent = genRating;
+    genEl.style.color = genColor;
+    document.getElementById('diagGeneralizationSub').textContent = `Train/Test Gap: ${gap.toFixed(3)}`;
+    
+    // Outliers Card
+    const outCount = info.outlier_count;
+    const outPct = info.outlier_percentage;
+    document.getElementById('diagOutliers').textContent = `${outPct.toFixed(1)}%`;
+    document.getElementById('diagOutliersSub').textContent = `${outCount} students flagged`;
+    
+    // Scale Card
+    document.getElementById('diagScale').textContent = info.total_records.toLocaleString();
+    document.getElementById('diagScaleSub').textContent = "students processed";
+    
+    // Render Diagnostics Charts (Elbow & Silhouette Sweep)
+    renderDiagnosticsCharts(info.diagnostics);
+  }
+
+  function renderDiagnosticsCharts(diags) {
+    if (elbowChart) elbowChart.destroy();
+    if (silhouetteSweepChart) silhouetteSweepChart.destroy();
+    
+    if (!diags) return;
+    
+    const ks = Object.keys(diags).map(Number);
+    const wcssVals = ks.map(k => diags[k].wcss);
+    const silVals = ks.map(k => diags[k].silhouette);
+    
+    // 1. Elbow Chart
+    const elbowCtx = document.getElementById('elbowChart').getContext('2d');
+    elbowChart = new Chart(elbowCtx, {
+      type: 'line',
+      data: {
+        labels: ks,
+        datasets: [{
+          label: 'WCSS (Inertia)',
+          data: wcssVals,
+          borderColor: 'var(--accent-indigo)',
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#9ca3af' } }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Number of Clusters (K)', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { display: false }
+          },
+          y: {
+            title: { display: true, text: 'WCSS Value', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { color: 'rgba(255,255,255,0.05)' }
+          }
+        }
+      }
+    });
+    
+    // 2. Silhouette Sweep Chart
+    const silCtx = document.getElementById('silhouetteSweepChart').getContext('2d');
+    silhouetteSweepChart = new Chart(silCtx, {
+      type: 'line',
+      data: {
+        labels: ks,
+        datasets: [{
+          label: 'Silhouette Score',
+          data: silVals,
+          borderColor: 'var(--accent-emerald)',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#9ca3af' } }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Number of Clusters (K)', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { display: false }
+          },
+          y: {
+            title: { display: true, text: 'Silhouette Score', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { color: 'rgba(255,255,255,0.05)' }
+          }
+        }
+      }
+    });
+  }
+
+  // System Benchmark execution trigger
+  const btnRunBenchmark = document.getElementById('btnRunBenchmark');
+  const benchSpinner = document.getElementById('benchSpinner');
+  const btnBenchText = document.getElementById('btnBenchText');
+  const benchmarkStats = document.getElementById('benchmarkStats');
+  
+  btnRunBenchmark.addEventListener('click', () => {
+    if (!activeDatasetId) return;
+    
+    btnRunBenchmark.disabled = true;
+    benchSpinner.classList.remove('d-none');
+    btnBenchText.textContent = "Benchmarking...";
+    
+    fetch(`/api/clustering/datasets/${activeDatasetId}/benchmark`, {
+      method: 'POST'
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Benchmark failed');
+      return data;
+    })
+    .then(bench => {
+      btnRunBenchmark.disabled = false;
+      benchSpinner.classList.add('d-none');
+      btnBenchText.textContent = "Run System Performance Check";
+      
+      // Populate text stats
+      document.getElementById('benchIngestTime').textContent = `${bench.ingest_ms.toFixed(1)} ms`;
+      document.getElementById('benchFitTime').textContent = `${bench.fit_ms.toFixed(1)} ms`;
+      document.getElementById('benchMemory').textContent = `${bench.peak_mem_mb.toFixed(2)} MB`;
+      document.getElementById('benchDBPersistence').textContent = `${bench.db_perf.sequential_est_ms.toFixed(0)} ms (est)`;
+      document.getElementById('benchDBSpeedup').textContent = `${bench.db_perf.speedup_factor.toFixed(1)}x faster`;
+      
+      benchmarkStats.classList.remove('d-none');
+      
+      // Draw performance scaling curve chart
+      renderScalingChart(bench.scaling_curve);
+    })
+    .catch(err => {
+      btnRunBenchmark.disabled = false;
+      benchSpinner.classList.add('d-none');
+      btnBenchText.textContent = "Run System Performance Check";
+      alert("Benchmark failed: " + err.message);
+    });
+  });
+  
+  function renderScalingChart(curve) {
+    if (scalingChart) scalingChart.destroy();
+    
+    const sizes = curve.map(c => c.size);
+    const times = curve.map(c => c.latency_ms);
+    const mems = curve.map(c => c.memory_mb);
+    
+    const scalingCtx = document.getElementById('scalingChart').getContext('2d');
+    scalingChart = new Chart(scalingCtx, {
+      type: 'line',
+      data: {
+        labels: sizes,
+        datasets: [
+          {
+            label: 'Fit Time (ms)',
+            data: times,
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.05)',
+            yAxisID: 'y',
+            tension: 0.2,
+            fill: true
+          },
+          {
+            label: 'RAM Footprint (MB)',
+            data: mems,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.05)',
+            yAxisID: 'y1',
+            tension: 0.2,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: { labels: { color: '#9ca3af' } }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Student Count', color: '#9ca3af' },
+            ticks: { color: '#6b7280' },
+            grid: { display: false }
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'Fit Time (milliseconds)', color: '#6366f1' },
+            ticks: { color: '#6366f1' },
+            grid: { color: 'rgba(255,255,255,0.05)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Peak Memory Footprint (MB)', color: '#10b981' },
+            ticks: { color: '#10b981' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  }
+
+  // Load datasets on startup
+  fetchDatasetsList();
+
+  // --- Admin User CRUD Logic ---
+  
+  function fetchUsersList() {
+    const tbody = document.getElementById('userTableBody');
+    if (!tbody) return; // Not admin view
+    
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3"><span class="spinner-border spinner-border-sm" role="status"></span> Loading users...</td></tr>';
+    
+    fetch('/api/users')
+    .then(res => {
+      if (!res.ok) throw new Error("Could not load users list.");
+      return res.json();
+    })
+    .then(data => {
+      tbody.innerHTML = '';
+      if (data.users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted small py-3">No user accounts found.</td></tr>';
+        return;
+      }
+      data.users.forEach(u => {
+        const tr = document.createElement('tr');
+        
+        const nameCell = document.createElement('td');
+        nameCell.className = "text-white fw-medium";
+        nameCell.textContent = u.username;
+        tr.appendChild(nameCell);
+        
+        const roleCell = document.createElement('td');
+        let roleBadgeClass = "bg-secondary-subtle text-secondary";
+        if (u.role === "Admin") roleBadgeClass = "bg-primary-subtle text-primary border border-primary-subtle";
+        else if (u.role === "Lecturer") roleBadgeClass = "bg-success-subtle text-success border border-success-subtle";
+        else if (u.role === "Exam Officer") roleBadgeClass = "bg-info-subtle text-info border border-info-subtle";
+        
+        roleCell.innerHTML = `<span class="badge ${roleBadgeClass} px-2 py-1">${u.role}</span>`;
+        tr.appendChild(roleCell);
+        
+        const dateCell = document.createElement('td');
+        dateCell.className = "text-muted small";
+        dateCell.textContent = u.created_at ? new Date(u.created_at).toLocaleString() : 'N/A';
+        tr.appendChild(dateCell);
+        
+        const actionsCell = document.createElement('td');
+        actionsCell.className = "text-center";
+        
+        const isSelf = u.username === "{{ current_user.username }}";
+        const deleteButton = isSelf 
+          ? `<button class="btn btn-sm btn-outline-danger px-2 py-1 disabled" title="Cannot delete yourself">Delete</button>`
+          : `<button class="btn btn-sm btn-outline-danger px-2 py-1" onclick="deleteUser(${u.user_id}, '${u.username}')">Delete</button>`;
+        
+        actionsCell.innerHTML = `
+          <button class="btn btn-sm btn-outline-light px-2 py-1 me-2" onclick="openEditUserModal(${u.user_id}, '${u.username}', '${u.role}')">Edit</button>
+          ${deleteButton}
+        `;
+        tr.appendChild(actionsCell);
+        
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger small py-3">Error: ${err.message}</td></tr>`;
+    });
+  }
+
+  const addUserForm = document.getElementById('addUserForm');
+  if (addUserForm) {
+    addUserForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('addUsername').value.trim();
+      const password = document.getElementById('addPassword').value;
+      const role = document.getElementById('addRole').value;
+      const errDiv = document.getElementById('addUserError');
+      
+      errDiv.classList.add('d-none');
+      
+      fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, role })
+      })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create user.");
+        return data;
+      })
+      .then(() => {
+        addUserForm.reset();
+        const modalEl = document.getElementById('addUserModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        if (modal) modal.hide();
+        fetchUsersList();
+      })
+      .catch(err => {
+        errDiv.textContent = err.message;
+        errDiv.classList.remove('d-none');
+      });
+    });
+  }
+
+  window.openEditUserModal = function(id, username, role) {
+    document.getElementById('editUserId').value = id;
+    document.getElementById('editUsername').value = username;
+    document.getElementById('editRole').value = role;
+    document.getElementById('editPassword').value = '';
+    document.getElementById('editUserError').classList.add('d-none');
+    
+    const modalEl = document.getElementById('editUserModal');
+    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modal.show();
+  };
+
+  const editUserForm = document.getElementById('editUserForm');
+  if (editUserForm) {
+    editUserForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editUserId').value;
+      const role = document.getElementById('editRole').value;
+      const password = document.getElementById('editPassword').value;
+      const errDiv = document.getElementById('editUserError');
+      
+      errDiv.classList.add('d-none');
+      
+      const payload = { role };
+      if (password) payload.password = password;
+      
+      fetch(`/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to update user.");
+        return data;
+      })
+      .then(() => {
+        editUserForm.reset();
+        const modalEl = document.getElementById('editUserModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+        if (modal) modal.hide();
+        fetchUsersList();
+      })
+      .catch(err => {
+        errDiv.textContent = err.message;
+        errDiv.classList.remove('d-none');
+      });
+    });
+  }
+
+  window.deleteUser = function(id, username) {
+    if (!confirm(`Are you sure you want to delete the user account for '${username}'?`)) return;
+    
+    fetch(`/api/users/${id}`, {
+      method: 'DELETE'
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete user.");
+      return data;
+    })
+    .then(() => {
+      fetchUsersList();
+    })
+    .catch(err => {
+      alert("Error deleting user: " + err.message);
+    });
+  };
+</script>
+{% endblock %}
