@@ -4,19 +4,70 @@ Flask skeleton implementing the architecture in Chapter Three: three-tier
 (Presentation / Application Logic / Data), two independent K-Means models
 (Returning students vs. New students), bcrypt auth, and CSV-based reporting.
 
-## Setup
+## Setup and Running Instructions
 
+Follow these steps to set up, run, and test the project locally.
+
+### 1. Prerequisites
+Ensure you have **Python 3.11 or later** installed.
+
+### 2. Repository Cloning and Virtual Environment Setup
+Clone the project repository and enter the directory:
 ```bash
+git clone https://github.com/uahtechtube/student_monitoring_system.git
+cd student_monitoring_system
+```
+
+Create a virtual environment and activate it:
+```bash
+# Windows (PowerShell/Command Prompt)
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+.venv\Scripts\activate
+
+# macOS/Linux (Terminal)
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install all project dependencies:
+```bash
 pip install -r requirements.txt
-cp .env.example .env              # then edit SECRET_KEY, etc.
+```
 
-python manage.py init-db
-python manage.py create-admin admin your-password-here
+### 3. Environment Configuration
+Copy the provided `.env.example` configuration file to create your local `.env` file:
+```bash
+# Windows
+copy .env.example .env
 
+# macOS/Linux
+cp .env.example .env
+```
+
+### 4. Running the Web Application
+This repository comes pre-packaged with `kiu_monitoring.db` preloaded with **80,000 student records** and **40,000 historical clustering runs** for immediate demonstration.
+
+To start the Flask development server:
+```bash
 flask run
 ```
+Open your browser and navigate to `http://127.0.0.1:5000` to view the landing page and login portal.
+
+#### Creating Administrator Credentials
+To log in, you will need an administrator account. You can create one easily using the CLI manager:
+```bash
+python manage.py create-admin your_username your_password
+```
+Use these credentials on the login screen to access the full clustering and reporting dashboards.
+
+#### Optional: Starting with a Fresh Database
+If you wish to wipe the preloaded database and initialize a clean, empty database structure:
+```bash
+python manage.py init-db
+python manage.py create-admin admin admin123
+```
+You can then upload `KIU_Student_Dataset_20000.xlsx` or another CSV dataset through the interface to run your own clustering simulations.
+
 
 ## Project layout
 
